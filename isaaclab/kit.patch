@@ -1,0 +1,17 @@
+--- a/apps/isaaclab.python.kit
++++ b/apps/isaaclab.python.kit
+@@ -282,4 +282,14 @@
+ ]
+ 
++[settings.app.tokens]
++data = "/tmp/isaaclab/ov"
++cache = "/tmp/isaaclab/cache"
++logs = "/tmp/isaaclab/logs"
++omni_data = "/tmp/isaaclab/omni/logs"
++omni_cache = "/tmp/isaaclab/omni/cache"
++omni_logs = "/tmp/isaaclab/omni/logs"
++omni_config = "/tmp/isaaclab/omni/config"
++appcache = "{data}/exts"
++
+ [settings.physics]
+ autoPopupSimulationOutputWindow = false

@@ -1,0 +1,17 @@
+--- a/apps/isaacsim.exp.action_and_event_data_generation.full.kit
++++ b/apps/isaacsim.exp.action_and_event_data_generation.full.kit
+@@ -142,5 +142,5 @@
+ 
+ # Download extensions into extscache folder
+-registryCacheFull = "${app}/../extscache"
++registryCacheFull = "${data}/extscache"
+ # registryEnabled = false
+
+--- a/apps/isaacsim.exp.action_and_event_data_generation.base.kit
++++ b/apps/isaacsim.exp.action_and_event_data_generation.base.kit
+@@ -48,5 +48,5 @@
+ 
+ # Download extensions into extscache folder
+-registryCacheFull = "${app}/../extscache"
++registryCacheFull = "${data}/extscache"
+ # registryEnabled = false
