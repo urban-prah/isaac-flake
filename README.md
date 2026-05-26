@@ -9,7 +9,7 @@ Official support status can be tracked in [#268](https://github.com/isaac-sim/Is
 - [Isaac Lab 2.3.2](https://isaac-sim.github.io/IsaacLab/v2.3.2/index.html) ❌ broken (see [README](./isaaclab/README.md))
 - [Isaac Sim WbRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/manual_livestream_clients.html) planned 🔜
 
-See [isaacsim/README.md] and [isaaclab/README.md](/isaaclab/README.md) for more info.
+See [isaacsim/README.md](/isaacsim/README.md) and [isaaclab/README.md](/isaaclab/README.md) for more info.
 
 ## Usage
 
