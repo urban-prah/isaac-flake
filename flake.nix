@@ -17,15 +17,26 @@
     packages = forAllSystems (pkgs: import ./default.nix {inherit pkgs;});
   in {
     inherit packages;
-    formatter = forAllSystems (pkgs: pkgs.alejandra);
     devShells = forAllSystems (pkgs: {
       default = pkgs.mkShell {
-        packages = builtins.attrValues packages.${pkgs.stdenv.hostPlatform.system};
+        packages =
+          (builtins.attrValues self.packages.${pkgs.stdenv.hostPlatform.system})
+          ++ [
+            self.formatter.${pkgs.stdenv.hostPlatform.system}
+          ];
         shellHook = ''
           ${self.checks.${pkgs.stdenv.hostPlatform.system}.pre-commit-check.shellHook}
         '';
       };
     });
+
+    formatter = forAllSystems (
+      pkgs: let
+        inherit (self.checks.${pkgs.stdenv.hostPlatform.system}.pre-commit-check) config;
+        inherit (config) package configFile;
+      in
+        pkgs.writeShellScriptBin "pre-commit-run" "${pkgs.lib.getExe package} run --all-files --config ${configFile}"
+    );
 
     checks = forAllSystems (pkgs: {
       pre-commit-check = git-hooks.lib.${pkgs.stdenv.hostPlatform.system}.run {
