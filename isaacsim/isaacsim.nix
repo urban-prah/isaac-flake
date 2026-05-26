@@ -34,7 +34,10 @@
     sha256 = "sha256-5D+c2/1sOEJcYjxQ2bJb7zeZCCnf4Omv4Qbo3fI5pXY=";
     stripRoot = false;
   };
-  patches = [./extscache.patch];
+  patches = [
+    ./extscache.patch
+    ./ros.patch
+  ];
 
   wrapBins = [
     "kit/kit"

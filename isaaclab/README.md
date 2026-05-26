@@ -69,7 +69,8 @@ We suggest following this steps to use the isaacsim package with isaaclab.
     ```
 1. Source isaacsim-env in isaaclab.sh
     ```bash
-    grep -q 'isaacsim-env' isaaclab.sh || sed -i '21i source $(which isaacsim-env)\n' isaaclab.sh
+    grep -q 'isaacsim-env' isaaclab.sh || sed -i '/-p|--python)/a\            source $(which isaacsim-env)' isaaclab.sh"
+
     ```
 1. Run isaaclab app
     ```bash

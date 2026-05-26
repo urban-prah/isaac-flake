@@ -65,6 +65,9 @@ cd $(dirname $(realpath $(which isaacsim)))
 1. Desktop file installation
    via `makeDesktopItem` instead of `post_install.sh`.
 
+1. Adding ros2 extension to `LD_LIBRARY_PATH`
+   via `ros.patch`. Previously it didn't work by just setting `ROS_DISTRO`.
+
 ## Useful debugging commands
 
 - Pass `--/app/printConfig=true` to kit to dump configuration.
