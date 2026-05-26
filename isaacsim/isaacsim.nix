@@ -124,6 +124,7 @@ in
           export ISAAC_PATH="$ISAACSIM"
           export CARB_APP_PATH="$ISAACSIM/kit"
           export EXP_PATH="$ISAACSIM/apps"
+          source "$ISAACSIM/setup_ros_env.sh"
           source "$ISAACSIM/setup_python_env.sh"
         '';
     in
