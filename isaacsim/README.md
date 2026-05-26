@@ -17,7 +17,7 @@ isaacsim-python
 # Get isaacsim environment (useful for isaaclab, extension development, etc.)
 source $(which isaacsim-env)
 
-# Any other scripts in the installation directory should techincally be working
+# Any other scripts in the installation directory should technically be working
 
 # Navigate to isaacsim directory with
 cd $(dirname $(realpath $(which isaacsim)))

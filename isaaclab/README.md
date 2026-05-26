@@ -10,7 +10,7 @@
 
 1. If we try packaging isaaclab dependencies as python packages using nix's
    `buildPythonPackage` paths get broken (EXT_PATH set relative to isaaclab
-   dir). This can be solved with extensive patching but we suggesting the `uv venv`
+   dir). This can be solved with extensive patching but we suggest the `uv venv`
    approach for now.
 
 ## Changes

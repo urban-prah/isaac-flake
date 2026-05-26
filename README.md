@@ -7,7 +7,7 @@ Official support status can be tracked in [#268](https://github.com/isaac-sim/Is
 
 - [Isaac Sim 5.1.0](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/index.html) ✅ working
 - [Isaac Lab 2.3.2](https://isaac-sim.github.io/IsaacLab/v2.3.2/index.html) ❌ broken (see [README](./isaaclab/README.md))
-- [Isaac Sim WbRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/manual_livestream_clients.html) planned 🔜
+- [Isaac Sim WebRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/manual_livestream_clients.html) planned 🔜
 
 See [isaacsim/README.md](/isaacsim/README.md) and [isaaclab/README.md](/isaaclab/README.md) for more info.
 
@@ -76,7 +76,7 @@ export PATH="${
 ```
 we can adapt to the expectations of the original software. This makes the
 package easier to maintain and update. It also doesn't require deep
-understating of the architecture and the original source. Some changes,
+understanding of the architecture and the original source. Some changes,
 however, are unavoidable. For those we encourage the use of patches or
 substitutions that can't fail silently.
 
@@ -87,7 +87,7 @@ difference. Fork the repo, make your changes, and open a pull request.
 ### LLMs and agents
 
 We have tried to incorporate AI agents to help develop this flake and found the
-experience discouraging. The Nix build system complicated and the documentation
+experience discouraging. The Nix build system is complicated and the documentation
 can sometimes be hard to find. Attribute paths, dependency declarations, or
 patch formats produce opaque errors that are hard to debug without
 understanding the surrounding context. Agents tend to make confident but
