@@ -5,7 +5,6 @@
   appimageTools,
   lndir,
   makeDesktopItem,
-  copyDesktopItems,
 }: let
   pname = "isaacsim-webrtc-streaming-client";
   version = "1.1.5";
@@ -17,12 +16,20 @@
     sha256 = "sha256-908jtpi0YJblD8rm4uR3TPz/cZxD3fbxbtbfnnDQkg4=";
   };
   extracted = appimageTools.extractType2 {inherit pname version src;};
+  desktopItem = makeDesktopItem {
+    name = pname;
+    desktopName = "Isaac Sim WebRTC Streaming Client";
+    comment = description;
+    icon = pname;
+    terminal = false;
+    type = "Application";
+    startupWMClass = "IsaacSim";
+    exec = pname;
+  };
 in
   appimageTools.wrapType2 {
     inherit pname version src;
     passthru = {inherit pname version src;};
-
-    nativeBuildInputs = [copyDesktopItems];
 
     extraInstallCommands =
       # bash
@@ -30,20 +37,9 @@ in
         mkdir -p $out/share
         "${lndir}/bin/lndir" -silent "${extracted}/usr/share" "$out/share"
         mkdir $out/share/applications
+        install -Dm644 ${desktopItem}/share/applications/*.desktop \
+          $out/share/applications/${pname}.desktop
       '';
-
-    desktopItems = [
-      (makeDesktopItem {
-        name = pname;
-        desktopName = "Isaac Sim WebRTC Streaming Client";
-        comment = description;
-        icon = pname;
-        terminal = false;
-        type = "Application";
-        startupWMClass = "IsaacSim";
-        exec = "${pname}";
-      })
-    ];
 
     meta = {
       inherit description;
