@@ -44,6 +44,11 @@ nix run github:urban-prah/isaac-flake#isaacsim
 
 - We haven't yet tested on platforms outside NixOS. It technically should work with [NixGL](https://github.com/nix-community/nixgl).
 
+- **NVIDIA driver version**: NVIDIA driver **580.142** is required. Driver version
+  **595.71.05** (introduced with NixOS 26.05) **results in a crash**. If you're on
+  NixOS 26.05, pin your NVIDIA driver to 580.142. The vulkan ICD path was updated
+  to work with the 26.05 driver layout, but the driver version itself must be pinned.
+
 - **x86_64 only**: Only `x86_64-linux` is supported for now.
 
 - Apps/scripts which try to pip install dependencies won't work (like

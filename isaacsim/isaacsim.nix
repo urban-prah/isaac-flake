@@ -119,7 +119,7 @@ in
           export PATH="${
             lib.makeBinPath [(writeShellScriptBin "x-terminal-emulator" "${terminalCmd}")]
           }:$PATH"
-          export VK_ICD_FILENAMES="${addDriverRunpath.driverLink}/share/vulkan/icd.d/nvidia_icd.${stdenv.hostPlatform.uname.processor}.json"
+          export VK_ICD_FILENAMES="${addDriverRunpath.driverLink}/share/vulkan/icd.d/nvidia_icd.json"
           ISAACSIM="${placeholder "out"}/${pname}"
           export ISAAC_PATH="$ISAACSIM"
           export CARB_APP_PATH="$ISAACSIM/kit"

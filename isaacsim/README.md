@@ -5,7 +5,7 @@
 # Runs isaac-sim.sh (isaacsim.exp.full.kit)
 isaacsim
 
-# Runs GUI launcher
+# Runs the interactive launcher (also installed with a .desktop file)
 isaacsim-selector
 
 # Direct access to kit binary
@@ -13,6 +13,9 @@ isaacsim-kit
 
 # Direct access to python executable
 isaacsim-python
+
+# Runs the streaming client (also installed with a .desktop file)
+isaacsim-webrtc-streaming-client
 
 # Get isaacsim environment (useful for isaaclab, extension development, etc.)
 source $(which isaacsim-env)
