@@ -12,18 +12,23 @@
     git-hooks,
   }: let
     supportedSystems = ["x86_64-linux"];
-    forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f nixpkgs.legacyPackages.${system});
+    forAllSystems = f:
+      nixpkgs.lib.genAttrs supportedSystems (
+        system:
+          f (
+            import nixpkgs {
+              inherit system;
+              config.allowUnfree = true;
+            }
+          )
+      );
 
     packages = forAllSystems (pkgs: import ./default.nix {inherit pkgs;});
   in {
     inherit packages;
     devShells = forAllSystems (pkgs: {
       default = pkgs.mkShell {
-        packages =
-          (builtins.attrValues self.packages.${pkgs.stdenv.hostPlatform.system})
-          ++ [
-            self.formatter.${pkgs.stdenv.hostPlatform.system}
-          ];
+        packages = builtins.attrValues self.packages.${pkgs.stdenv.hostPlatform.system};
         shellHook = ''
           ${self.checks.${pkgs.stdenv.hostPlatform.system}.pre-commit-check.shellHook}
         '';
