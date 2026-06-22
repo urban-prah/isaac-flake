@@ -5,9 +5,6 @@
 # Runs isaac-sim.sh (isaacsim.exp.full.kit)
 isaacsim
 
-# Runs the interactive launcher (also installed with a .desktop file)
-isaacsim-selector
-
 # Direct access to kit binary
 isaacsim-kit
 
@@ -25,14 +22,15 @@ source $(which isaacsim-env)
 # Navigate to isaacsim directory with
 cd $(dirname $(realpath $(which isaacsim)))
 # Run script
-./isaac-sim.fabric.sh 
+./isaac-sim.fabric.sh
+./isaac-sim.newton.sh
 ```
 
 ## Changes
 
 1. Dynamic linking 
    isn't supported on Nix that's why we use patchelf to set interpreter paths
-   to prebuilt binaries like `isaacsim.ros2.bridge.check` which are invoked by
+   to prebuilt binaries like `isaacsim.ros2.core.check` which are invoked by
    extensions. We use the `patchExtra` argument to specify binaries relative to
    the isaacsim root directory.
 
@@ -42,7 +40,7 @@ cd $(dirname $(realpath $(which isaacsim)))
     - kit/python/python
     - kit/python/python3
     - kit/python/bin/python3
-    - kit/python/bin/python3.11
+    - kit/python/bin/python3.12
 
    Things get complicated when the missing extensions are downloaded
    dynamically into the user directory. By design nix derivations can't effect

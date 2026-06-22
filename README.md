@@ -5,11 +5,18 @@ Official support status can be tracked in [#268](https://github.com/isaac-sim/Is
 
 ## Packages
 
-- [Isaac Sim 5.1.0](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/index.html) ✅ working
+- [Isaac Sim 6.0.0](https://docs.isaacsim.omniverse.nvidia.com/6.0.0/index.html) ✅ working
 - [Isaac Lab 2.3.2](https://isaac-sim.github.io/IsaacLab/v2.3.2/index.html) ❌ broken (see [README](./isaaclab/README.md))
-- [Isaac Sim WebRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/manual_livestream_clients.html) ✅ working
+- [Isaac Sim WebRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/6.0.0/installation/manual_livestream_clients.html) ✅ working
 
 See [isaacsim/README.md](/isaacsim/README.md) and [isaaclab/README.md](/isaaclab/README.md) for more info.
+
+Other Isaac Sim versions are available on separate git branches named after the
+Isaac Sim version they package (e.g. the `v5.1.0` branch packages Isaac Sim
+5.1.0). The `main` branch always tracks the latest **stable** version.
+
+> Note that the isaacsim-selector has been removed in v6.0.0 and with it the
+> default flake entry-point has also been changed to just `isaacsim`
 
 ## Usage
 
@@ -73,7 +80,7 @@ serve as a starting point for official NVIDIA support.
 
 ### Philosophy
 
-We want to make as little changes to the source as possible. With tricks like 
+We want to make as little changes to the source as possible. With tricks like
 ```nix
 export PATH="${
   lib.makeBinPath [ (writeShellScriptBin "x-terminal-emulator" "${terminalCmd}") ]
