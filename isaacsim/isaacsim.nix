@@ -25,19 +25,16 @@
   extraLibs ? [],
 }: let
   pname = "isaacsim";
-  version = "5.1.0";
+  version = "6.0.0";
   description = "NVIDIA Isaac Sim™ is a reference application built on NVIDIA Omniverse that enables developers to develop, simulate, and test AI-driven robots in physically-based virtual environments.";
 
   src = fetchzip {
     name = "isaac-sim-${version}";
     url = "https://downloads.isaacsim.nvidia.com/isaac-sim-standalone-${version}-linux-x86_64.zip";
-    sha256 = "sha256-5D+c2/1sOEJcYjxQ2bJb7zeZCCnf4Omv4Qbo3fI5pXY=";
+    sha256 = "sha256-iYDgpnvf9/XOoS+qSbjePalZDnZZ3G/v2iBm50SzLSM=";
     stripRoot = false;
   };
-  patches = [
-    ./extscache.patch
-    ./ros.patch
-  ];
+  patches = [./ros.patch];
 
   wrapBins = [
     "kit/kit"
@@ -45,11 +42,11 @@
     "kit/python/python"
     "kit/python/python3"
     "kit/python/bin/python3"
-    "kit/python/bin/python3.11"
+    "kit/python/bin/python3.12"
   ];
   patchBins =
     [
-      "exts/isaacsim.ros2.bridge/bin/isaacsim.ros2.bridge.check"
+      "exts/isaacsim.ros2.core/bin/isaacsim.ros2.core.check"
     ]
     ++ patchExtra;
 in
@@ -93,7 +90,7 @@ in
         # installation via `makeDesktopItem`
         substituteInPlace \
           exts/isaacsim.app.setup/isaacsim/app/setup/extension.py \
-          --replace-fail "self.__add_app_icon(ext_id)" 'carb.log_warn(f"Skipping isaacsim.desktop installation on NixOS")'
+          --replace-fail "app_utils.create_desktop_icon(self._app, self._ext_manager, ext_id)" 'carb.log_warn(f"Skipping isaacsim.desktop installation on NixOS")'
       '';
 
     installPhase = let
@@ -140,7 +137,6 @@ in
         mkdir -p $out/share/applications
         cp -r . "$ISAAC"
         ln -s "$ISAAC/isaac-sim.sh" "$out/bin/$pname"
-        ln -s "$ISAAC/isaac-sim.selector.sh" "$out/bin/$pname-selector"
         ln -s "$ISAAC/kit/kit" "$out/bin/$pname-kit"
         ln -s "$ISAAC/python.sh" "$out/bin/$pname-python"
         install -Dm755 /dev/stdin "$out/bin/$pname-env" << 'EOF'
@@ -180,7 +176,7 @@ in
         terminal = false;
         type = "Application";
         startupWMClass = "IsaacSim";
-        exec = "${pname}-selector";
+        exec = "${pname}";
       })
     ];
 

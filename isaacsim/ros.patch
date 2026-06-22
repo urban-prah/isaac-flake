@@ -1,11 +1,11 @@
 --- a/setup_ros_env.sh
 +++ b/setup_ros_env.sh
-@@ -43,14 +43,10 @@
+@@ -38,14 +38,10 @@
      # Set ROS distro based on Ubuntu version
      export ROS_DISTRO="$DEFAULT_ROS_DISTRO"
 -    
--    # Path to the ROS2 bridge extension
--    BRIDGE_EXT_PATH="$ISAAC_SIM_ROOT/exts/isaacsim.ros2.bridge"
+-    # Path to the ROS2 core extension
+-    BRIDGE_EXT_PATH="$ISAAC_SIM_ROOT/exts/isaacsim.ros2.core"
 +fi
  
 -    # Update LD_LIBRARY_PATH to include the extension libraries
@@ -15,7 +15,7 @@
 -        export LD_LIBRARY_PATH="$BRIDGE_EXT_PATH/$ROS_DISTRO/lib"
 -    fi
 +# Try adding ros extension to LD_LIBRARY_PATH
-+BRIDGE_EXT_PATH="$ISAAC_SIM_ROOT/exts/isaacsim.ros2.bridge"
++BRIDGE_EXT_PATH="$ISAAC_SIM_ROOT/exts/isaacsim.ros2.core"
 +if [ -d "$BRIDGE_EXT_PATH/$ROS_DISTRO/lib" ]; then
 +    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$BRIDGE_EXT_PATH/$ROS_DISTRO/lib"
  fi
