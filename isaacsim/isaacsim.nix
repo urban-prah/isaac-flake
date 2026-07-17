@@ -25,13 +25,13 @@
   extraLibs ? [],
 }: let
   pname = "isaacsim";
-  version = "6.0.0";
+  version = "6.0.1";
   description = "NVIDIA Isaac Sim™ is a reference application built on NVIDIA Omniverse that enables developers to develop, simulate, and test AI-driven robots in physically-based virtual environments.";
 
   src = fetchzip {
     name = "isaac-sim-${version}";
     url = "https://downloads.isaacsim.nvidia.com/isaac-sim-standalone-${version}-linux-x86_64.zip";
-    sha256 = "sha256-iYDgpnvf9/XOoS+qSbjePalZDnZZ3G/v2iBm50SzLSM=";
+    sha256 = "sha256-TWv8x6Q/XDhw9vo/S31diR7IpoRjCFVctRy6+9Sil+w=";
     stripRoot = false;
   };
   patches = [./ros.patch];
