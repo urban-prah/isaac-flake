@@ -18,6 +18,7 @@ isaacsim-webrtc-streaming-client
 source $(which isaacsim-env)
 
 # Any other scripts in the installation directory should technically be working
+# (except `jupyter_notebook.sh`, see Known issues)
 
 # Navigate to isaacsim directory with
 cd $(dirname $(realpath $(which isaacsim)))
@@ -59,15 +60,21 @@ cd $(dirname $(realpath $(which isaacsim)))
    to emulate the command by creating a lightweight wrapper. By default it uses
    the DE-agnostic `xdg-terminal-exec` directly from nixpkgs.
 
-1. Changing `registryCacheFull`
-   in `extscache.patch` makes it so it installs extensions outside the nix
-   store for the **Action and event data generation** app
-
 1. Desktop file installation
    via `makeDesktopItem` instead of `post_install.sh`.
 
 1. Adding ros2 extension to `LD_LIBRARY_PATH`
    via `ros.patch`. Previously it didn't work by just setting `ROS_DISTRO`.
+
+## Known issues
+
+- `jupyter_notebook.sh` is **broken**.
+  It runs `pip install --upgrade jupyter` against the bundled interpreter
+  (`kit/python/bin/python3`) at startup, but that interpreter lives in the
+  read-only `/nix/store`, so the install fails and `set -e` aborts the script.
+  A fix would need to provide `jupyter` from outside the store (e.g. a devShell
+  with `python3Packages.jupyter` plus `source $(which isaacsim-env)`) and
+  register the kernelspec manually — untested.
 
 ## Useful debugging commands
 
