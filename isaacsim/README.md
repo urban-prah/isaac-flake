@@ -87,3 +87,62 @@ cd $(dirname $(realpath $(which isaacsim)))
 
 - `cd $(dirname $(realpath $(which isaacsim)))` to access the nix derivation
 
+
+## Official agent skills
+
+NVIDIA's official `AGENTS.md` and complete `skills/` directory are fetched as
+part of the version-pinned Isaac Sim archive and preserved in the installed
+derivation. Updating the archive updates these files with the installation;
+there is no local skill inventory or copied agent guide to maintain. The package
+build checks that the upstream guide and skill catalog are present.
+
+The development shell and `isaacsim-env` expose `ISAAC_SIM_DIR`. Agents working
+with this installation should read `$ISAAC_SIM_DIR/AGENTS.md`, then the relevant
+skills under `$ISAAC_SIM_DIR/skills/`. The routing catalog is
+`$ISAAC_SIM_DIR/skills/SKILLS.md`. Companion files retain their upstream paths.
+No global skills, project links, or workspace directories are created. Agents
+operating outside the installation must be directed to its guide; exporting an
+environment variable alone does not automatically load it in every agent client.
+
+## Runtime verification
+
+Build the package from the worktree root:
+
+```bash
+nix build .#isaacsim -L
+```
+
+Run the headless stage/timeline smoke test through the selected package:
+
+```bash
+nix develop --command isaacsim-python isaacsim/smoke.py
+```
+
+For manual verification, launch the same lit cube-and-floor scene with a window:
+
+```bash
+nix develop --command isaacsim-python isaacsim/smoke.py --gui
+```
+
+Pass additional options to the script, for example:
+
+```bash
+nix develop --command isaacsim-python isaacsim/smoke.py --gpu 1 --output /tmp/isaacsim-3060-smoke.json
+```
+
+Each run writes its result to a unique `/tmp/isaacsim-smoke-*.json` file and
+prints the path on success. Use `--output PATH` to choose a specific location;
+an existing result at that path is removed before startup. Runtime verification
+is separate from `nix flake check`, which checks the Nix files.
+
+The default is CUDA GPU 0 (this host's RTX PRO 5000 Blackwell); pass `--gpu 1`
+to test the RTX 3060 separately. Both rendering and physics select that GPU,
+and multi-GPU rendering remains disabled. A test on each card is distinct from
+validating simultaneous rendering across different GPU architectures.
+
+Check that the viewport renders the blue cube and floor, that simulation controls
+work, and that startup has no fatal Vulkan, library, or extension errors. Close
+the window after verification. The result JSON records initialization and 120
+application updates; it does not certify visual rendering or numerical physics
+parity. Manual approval is required before integrating this release candidate or
+beginning the dependent SARA IsaacLab upgrade.

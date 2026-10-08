@@ -5,7 +5,7 @@ Official support status can be tracked in [#268](https://github.com/isaac-sim/Is
 
 ## Packages
 
-- [Isaac Sim 6.0.1](https://docs.isaacsim.omniverse.nvidia.com/6.0.1/index.html) ✅ working
+- [Isaac Sim 6.1.0](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/index.html) ✅ working
 - [Isaac Lab 2.3.2](https://isaac-sim.github.io/IsaacLab/v2.3.2/index.html) ❌ broken (see [README](./isaaclab/README.md))
 - [Isaac Sim WebRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/6.0.1/installation/manual_livestream_clients.html) ✅ working
 
@@ -51,11 +51,9 @@ nix run github:urban-prah/isaac-flake#isaacsim
 
 - We haven't yet tested on platforms outside NixOS. It technically should work with [NixGL](https://github.com/nix-community/nixgl).
 
-- **NVIDIA driver version**: NVIDIA driver **580.142** is required. Driver version
-  **595.71.05** (introduced with NixOS 26.05) **results in a crash**. If you're on
-  NixOS 26.05, pin your NVIDIA driver to 580.142. The vulkan ICD path was updated
-  to work with the 26.05 driver layout, but the driver version itself must be pinned.
-
+- **NVIDIA driver version**: Follow the version-specific
+  [NVIDIA requirements](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/installation/requirements.html).
+  NVIDIA lists Linux 595.58.03 as its tested x86_64 driver for 6.1.0.
 - **x86_64 only**: Only `x86_64-linux` is supported for now.
 
 - Apps/scripts which try to pip install dependencies won't work (like
@@ -95,16 +93,3 @@ substitutions that can't fail silently.
 The Nix ecosystem thrives on community contributions — even small fixes like
 correcting a dependency, updating a version, or improving documentation make a
 difference. Fork the repo, make your changes, and open a pull request.
-
-### LLMs and agents
-
-We have tried to incorporate AI agents to help develop this flake and found the
-experience discouraging. The Nix build system is complicated and the documentation
-can sometimes be hard to find. Attribute paths, dependency declarations, or
-patch formats produce opaque errors that are hard to debug without
-understanding the surrounding context. Agents tend to make confident but
-incorrect changes that look plausible on review.
-
-As a result we are reluctant to accept AI-generated contributions and prefer
-changes written and reviewed by people familiar with Nix and the NVIDIA Isaac
-ecosystem.

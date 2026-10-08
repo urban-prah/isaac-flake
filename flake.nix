@@ -30,6 +30,7 @@
       default = pkgs.mkShell {
         packages = builtins.attrValues self.packages.${pkgs.stdenv.hostPlatform.system};
         shellHook = ''
+          export ISAAC_SIM_DIR="${self.packages.${pkgs.stdenv.hostPlatform.system}.isaacsim}/isaacsim"
           ${self.checks.${pkgs.stdenv.hostPlatform.system}.pre-commit-check.shellHook}
         '';
       };

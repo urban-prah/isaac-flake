@@ -25,13 +25,13 @@
   extraLibs ? [],
 }: let
   pname = "isaacsim";
-  version = "6.0.1";
+  version = "6.1.0";
   description = "NVIDIA Isaac Sim™ is a reference application built on NVIDIA Omniverse that enables developers to develop, simulate, and test AI-driven robots in physically-based virtual environments.";
 
   src = fetchzip {
     name = "isaac-sim-${version}";
     url = "https://downloads.isaacsim.nvidia.com/isaac-sim-standalone-${version}-linux-x86_64.zip";
-    sha256 = "sha256-TWv8x6Q/XDhw9vo/S31diR7IpoRjCFVctRy6+9Sil+w=";
+    sha256 = "sha256-myL+p2SjYBGvu7MlvV4EVzVCKRqmd6ugugS/MiIavy8=";
     stripRoot = false;
   };
   patches = [./ros.patch];
@@ -119,6 +119,7 @@ in
           export VK_ICD_FILENAMES="${addDriverRunpath.driverLink}/share/vulkan/icd.d/nvidia_icd.json"
           ISAACSIM="${placeholder "out"}/${pname}"
           export ISAAC_PATH="$ISAACSIM"
+          export ISAAC_SIM_DIR="$ISAACSIM"
           export CARB_APP_PATH="$ISAACSIM/kit"
           export EXP_PATH="$ISAACSIM/apps"
           source "$ISAACSIM/setup_ros_env.sh"
@@ -135,7 +136,10 @@ in
         mkdir -p "$ISAAC"
         mkdir -p "$out/bin"
         mkdir -p $out/share/applications
+        # Preserve the upstream guide and complete skills tree from the pinned archive.
         cp -r . "$ISAAC"
+        test -f "$ISAAC/AGENTS.md"
+        test -f "$ISAAC/skills/SKILLS.md"
         ln -s "$ISAAC/isaac-sim.sh" "$out/bin/$pname"
         ln -s "$ISAAC/kit/kit" "$out/bin/$pname-kit"
         ln -s "$ISAAC/python.sh" "$out/bin/$pname-python"
