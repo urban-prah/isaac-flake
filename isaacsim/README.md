@@ -146,3 +146,12 @@ the window after verification. The result JSON records initialization and 120
 application updates; it does not certify visual rendering or numerical physics
 parity. Manual approval is required before integrating this release candidate or
 beginning the dependent SARA IsaacLab upgrade.
+
+## Standalone documentation MCP server
+
+This flake also provides `isaacsim-mcp`, NVIDIA's independent documentation
+server. Run `nix run .#isaacsim-mcp -- --env-file /absolute/path/to/server.env`
+and connect your MCP client to `http://127.0.0.1:9904/mcp`. It ships the 6.1
+documentation corpus and provides five search/reference tools. See
+[mcp/README.md](./mcp/README.md) for credentials, local NIM configuration,
+package checks, and the scope of its tools.

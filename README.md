@@ -6,6 +6,7 @@ Official support status can be tracked in [#268](https://github.com/isaac-sim/Is
 ## Packages
 
 - [Isaac Sim 6.1.0](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/index.html) ✅ working
+- [Isaac Sim MCP](./isaacsim/mcp/README.md) — ✅ working
 - [Isaac Lab 2.3.2](https://isaac-sim.github.io/IsaacLab/v2.3.2/index.html) ❌ broken (see [README](./isaaclab/README.md))
 - [Isaac Sim WebRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/6.0.1/installation/manual_livestream_clients.html) ✅ working
 
