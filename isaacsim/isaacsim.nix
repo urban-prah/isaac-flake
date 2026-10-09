@@ -18,6 +18,7 @@
   libbsd,
   # propagatedBuildInputs
   xdg-terminal-exec,
+  zenity,
   mpi,
   # Custom args
   terminalCmd ? ''xdg-terminal-exec "$@"'',
@@ -57,6 +58,7 @@ in
 
     propagatedBuildInputs = [
       xdg-terminal-exec
+      zenity
       mpi
     ];
     nativeBuildInputs = [
@@ -115,7 +117,7 @@ in
           }:$LD_LIBRARY_PATH"
           export PATH="${
             lib.makeBinPath [(writeShellScriptBin "x-terminal-emulator" "${terminalCmd}")]
-          }:$PATH"
+          }:${placeholder "out"}/libexec/isaacsim:$PATH"
           export VK_ICD_FILENAMES="${addDriverRunpath.driverLink}/share/vulkan/icd.d/nvidia_icd.json"
           ISAACSIM="${placeholder "out"}/${pname}"
           export ISAAC_PATH="$ISAACSIM"
@@ -136,6 +138,9 @@ in
         mkdir -p "$ISAAC"
         mkdir -p "$out/bin"
         mkdir -p $out/share/applications
+        # Keep Kit dialogs independent of the bundled ROS/OpenSSL libraries.
+        makeWrapper ${lib.getExe zenity} "$out/libexec/isaacsim/zenity" \
+          --unset LD_LIBRARY_PATH --unset LD_PRELOAD
         # Preserve the upstream guide and complete skills tree from the pinned archive.
         cp -r . "$ISAAC"
         test -f "$ISAAC/AGENTS.md"

@@ -106,7 +106,7 @@ environment variable alone does not automatically load it in every agent client.
 
 ## Runtime verification
 
-Build the package from the worktree root:
+Build the package from the repository root:
 
 ```bash
 nix build .#isaacsim -L
@@ -127,7 +127,7 @@ nix develop --command isaacsim-python isaacsim/smoke.py --gui
 Pass additional options to the script, for example:
 
 ```bash
-nix develop --command isaacsim-python isaacsim/smoke.py --gpu 1 --output /tmp/isaacsim-3060-smoke.json
+nix develop --command isaacsim-python isaacsim/smoke.py --gpu 1 --output /tmp/isaacsim-gpu1-smoke.json
 ```
 
 Each run writes its result to a unique `/tmp/isaacsim-smoke-*.json` file and
@@ -135,17 +135,16 @@ prints the path on success. Use `--output PATH` to choose a specific location;
 an existing result at that path is removed before startup. Runtime verification
 is separate from `nix flake check`, which checks the Nix files.
 
-The default is CUDA GPU 0 (this host's RTX PRO 5000 Blackwell); pass `--gpu 1`
-to test the RTX 3060 separately. Both rendering and physics select that GPU,
-and multi-GPU rendering remains disabled. A test on each card is distinct from
-validating simultaneous rendering across different GPU architectures.
+The default is CUDA GPU 0. Pass `--gpu INDEX` to select another available device.
+Both rendering and physics select that GPU, and multi-GPU rendering remains
+disabled. Testing individual devices does not verify simultaneous rendering
+across multiple GPUs.
 
 Check that the viewport renders the blue cube and floor, that simulation controls
 work, and that startup has no fatal Vulkan, library, or extension errors. Close
 the window after verification. The result JSON records initialization and 120
 application updates; it does not certify visual rendering or numerical physics
-parity. Manual approval is required before integrating this release candidate or
-beginning the dependent SARA IsaacLab upgrade.
+parity. Manual verification complements the automated startup check.
 
 ## Standalone documentation MCP server
 

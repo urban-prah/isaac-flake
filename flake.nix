@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     git-hooks.url = "github:cachix/git-hooks.nix";
+    isaaclab-src = {
+      url = "github:isaac-sim/IsaacLab/v3.0.0-EA";
+      flake = false;
+    };
     pyproject-nix = {
       url = "github:pyproject-nix/pyproject.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -29,6 +33,7 @@
     self,
     nixpkgs,
     git-hooks,
+    isaaclab-src,
     pyproject-nix,
     uv2nix,
     pyproject-build-systems,
@@ -47,10 +52,12 @@
 
     packages = forAllSystems (pkgs:
       import ./default.nix {
-        inherit pkgs pyproject-nix uv2nix pyproject-build-systems;
+        inherit pkgs isaaclab-src pyproject-nix uv2nix pyproject-build-systems;
       });
   in {
     inherit packages;
+    lib.mkIsaacLab = {system ? "x86_64-linux", ...} @ arguments:
+      self.packages.${system}.isaaclab.override (builtins.removeAttrs arguments ["system"]);
     apps = forAllSystems (pkgs:
       pkgs.lib.mapAttrs (_: package: {
         type = "app";
@@ -61,11 +68,13 @@
       default = pkgs.mkShell {
         packages = with self.packages.${pkgs.stdenv.hostPlatform.system}; [
           isaacsim
+          isaaclab
           isaacsim-mcp
           isaacsim-webrtc-streaming-client
         ];
         shellHook = ''
           export ISAAC_SIM_DIR="${self.packages.${pkgs.stdenv.hostPlatform.system}.isaacsim}/isaacsim"
+          export ISAAC_LAB_DIR="$(${pkgs.lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.isaaclab.sourceWorkspace})"
           ${self.checks.${pkgs.stdenv.hostPlatform.system}.pre-commit-check.shellHook}
         '';
       };
@@ -82,6 +91,23 @@
     checks = forAllSystems (pkgs: let
       mcp = self.packages.${pkgs.stdenv.hostPlatform.system}.isaacsim-mcp;
     in {
+      inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) isaaclab;
+      isaaclab-dependencies = self.packages.${pkgs.stdenv.hostPlatform.system}.isaaclab.tests.dependencies;
+      isaaclab-consumer-extras =
+        pkgs.runCommand "isaaclab-consumer-extras-check" {
+          nativeBuildInputs = [pkgs.python3];
+        } ''
+          python ${./isaaclab/tests/consumer-extras.py} \
+            ${self.packages.${pkgs.stdenv.hostPlatform.system}.isaaclab.environment}/bin/python \
+            ${./isaaclab/tests/check-dependencies.py} > "$out"
+        '';
+      isaaclab-workspace =
+        pkgs.runCommand "isaaclab-workspace-check" {
+          nativeBuildInputs = [pkgs.python3];
+        } ''
+          python ${./isaaclab/tests/workspace.py} \
+            ${self.packages.${pkgs.stdenv.hostPlatform.system}.isaaclab} ${isaaclab-src} > "$out"
+        '';
       isaacsim-mcp = mcp;
       isaacsim-mcp-smoke =
         pkgs.runCommand "isaacsim-mcp-smoke" {

@@ -1,101 +1,69 @@
 {
   lib,
-  stdenv,
-  fetchFromGitHub,
-  # nativeBuildInputs
+  pkgs,
+  callPackage,
+  symlinkJoin,
   makeWrapper,
-  bash,
-  # Runtime dependencies
   isaacsim,
-  python311,
-  python311Packages,
-  # Custom args
-  extraPythonLibs ? [],
+  isaaclab-src,
+  pyproject-nix,
+  uv2nix,
+  pyproject-build-systems,
+  extraDependencies ? {},
+  pythonOverrides ? [],
+  constraintProjects ? [],
+  name ? "isaaclab-3.0.0-EA",
 }: let
-  pname = "isaaclab";
-  version = "2.3.2";
-  description = "Isaac Lab is a unified and modular framework for robot learning that aims to simplify common workflows in robotics research (such as reinforcement learning, learning from demonstrations, and motion planning). It is built on NVIDIA Isaac Sim to leverage the latest simulation capabilities for photo-realistic scenes, and fast and efficient simulation.";
-
-  src = fetchFromGitHub {
-    owner = "isaac-sim";
-    repo = "IsaacLab";
-    rev = "v${version}";
-    sha256 = "sha256-amBHUPkyKJ4z7UZkjoypQXj0dd+FITwIdLDH/qSFG3A=";
+  version = "3.0.0-EA";
+  tag = "v${version}";
+  revision = isaaclab-src.rev;
+  source = callPackage ./source.nix {
+    inherit version revision isaacsim;
+    src = isaaclab-src;
   };
-  patches = [
-    ./isaaclab.patch
-    ./kit.patch
-  ];
-
-  pythonLibs =
-    [
-      python311Packages.flatdict
-      python311Packages.h5py
-    ]
-    ++ extraPythonLibs;
-  extraPythonPath = lib.concatMapStringsSep ":" (pkg: "${pkg}/${python311.sitePackages}") pythonLibs;
+  sourceWorkspace = callPackage ./workspace.nix {inherit source;};
+  python = callPackage ./python.nix {inherit isaacsim;};
+  dependencies = callPackage ./dependencies.nix {
+    inherit pkgs isaaclab-src pyproject-nix uv2nix pyproject-build-systems;
+  };
+  assembled = callPackage ./environment.nix {
+    inherit name isaaclab-src extraDependencies pythonOverrides constraintProjects;
+    inherit (dependencies) pythonSet selected;
+  };
+  inherit (assembled) environment;
 in
-  stdenv.mkDerivation {
-    inherit pname;
-    inherit version;
-    inherit src;
-    inherit patches;
-
-    nativeBuildInputs = [
-      makeWrapper
-      bash
-    ];
-    propagatedBuildInputs = [isaacsim];
-
-    dontConfigure = true;
-    dontBuild = true;
-    dontPatchELF = true;
-    dontStrip = true;
-
-    installPhase = ''
-      ISAAC="$out/$pname"
-
-      mkdir -p "$ISAAC"
+  symlinkJoin {
+    inherit name;
+    paths = [source];
+    nativeBuildInputs = [makeWrapper];
+    postBuild = ''
       mkdir -p "$out/bin"
-      cp -r . "$ISAAC"
-
-      # Symlink Isaac Sim installation ...
-      mkdir -p $out/${pname}/_isaac_sim
-      for entry in ${isaacsim}/isaacsim/*; do
-        name="$(basename $entry)"
-        [[ "$name" == python.sh ]] && continue
-        ln -s $entry $out/${pname}/_isaac_sim/$name
-      done
-
-      ln -s "$ISAAC/isaaclab.sh" "$out/bin/$pname"
+      ln -s ${environment} "$out/dependencies"
+      ln -s ${environment} "$out/venv"
+      ln -s ${python} "$out/python"
+      ln -s ${lib.getExe sourceWorkspace} "$out/bin/isaaclab-workspace"
+      makeWrapper ${python}/bin/python3 "$out/bin/isaaclab" \
+        --add-flags ${environment}/bin/isaaclab \
+        --unset VIRTUAL_ENV --unset CONDA_PREFIX --unset PYTHONHOME \
+        --run 'ISAAC_LAB_DIR="$(${lib.getExe sourceWorkspace})" || exit "$?"; export ISAAC_LAB_DIR' \
+        --set ISAAC_SIM_DIR ${isaacsim}/isaacsim \
+        --set PYTHONDONTWRITEBYTECODE 1 \
+        --set-default PYGLFW_LIBRARY_VARIANT x11 \
+        --run 'source ${isaacsim}/bin/isaacsim-env' \
+        --prefix PYTHONPATH : ${environment}/lib/python3.12/site-packages
     '';
-
-    postFixup = ''
-      wrapProgram "$out/$pname/isaaclab.sh" \
-        --run "source $(which isaacsim-env)" \
-        --suffix PYTHONPATH : ${
-        # WARN: this are not actually installed packages!
-        lib.concatMapStringsSep ":" (ext: "${placeholder "out"}/${pname}/source/${ext}") [
-          "isaaclab"
-          "isaaclab_assets"
-          "isaaclab_contrib"
-          "isaaclab_mimic"
-          "isaaclab_rl"
-          "isaaclab_tasks"
-        ]
-      }:${extraPythonPath}
-    '';
-
+    passthru = {
+      inherit version tag revision source sourceWorkspace python environment;
+      workspace = sourceWorkspace;
+      kitPython = python;
+      inherit (assembled) projectPython dependencySpec constraintSpec;
+      tests.dependencies = assembled.check;
+    };
     meta = {
-      inherit description;
-      homepage = "https://isaac-sim.github.io/IsaacLab/v${version}/index.html";
-      downloadPage = "https://github.com/isaac-sim/IsaacLab/releases/tag/v${version}";
-      changelog = "https://isaac-sim.github.io/IsaacLab/v${version}/source/refs/release_notes.html";
-      sourceProvenance = with lib.sourceTypes; [fromSource];
-      license = with lib.licenses; [bsd3];
-      maintainers = [];
+      description = "IsaacLab Early Access with an offline uv2nix environment for Isaac Sim";
+      homepage = "https://github.com/isaac-sim/IsaacLab/releases/tag/${tag}";
+      license = lib.licenses.bsd3;
       platforms = ["x86_64-linux"];
-      broken = true;
-      mainProgram = pname;
+      mainProgram = "isaaclab";
     };
   }

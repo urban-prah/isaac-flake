@@ -1,5 +1,6 @@
 {
   pkgs ? import <nixpkgs> {},
+  isaaclab-src,
   pyproject-nix,
   uv2nix,
   pyproject-build-systems,
@@ -11,6 +12,7 @@
   isaacsim-webrtc-streaming-client =
     pkgs.callPackage ./isaacsim/isaacsim-webrtc-streaming-client.nix
     {};
-  # WARN: broken
-  # isaaclab = pkgs.callPackage ./isaaclab/isaaclab.nix { inherit isaacsim; };
+  isaaclab = pkgs.callPackage ./isaaclab/isaaclab.nix {
+    inherit isaacsim isaaclab-src pyproject-nix uv2nix pyproject-build-systems;
+  };
 }

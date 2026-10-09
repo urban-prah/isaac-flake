@@ -7,7 +7,7 @@ Official support status can be tracked in [#268](https://github.com/isaac-sim/Is
 
 - [Isaac Sim 6.1.0](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/index.html) ✅ working
 - [Isaac Sim MCP](./isaacsim/mcp/README.md) — ✅ working
-- [Isaac Lab 2.3.2](https://isaac-sim.github.io/IsaacLab/v2.3.2/index.html) ❌ broken (see [README](./isaaclab/README.md))
+- [IsaacLab v3.0.0-EA](./isaaclab/README.md) — uv2nix release candidate
 - [Isaac Sim WebRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/6.0.1/installation/manual_livestream_clients.html) ✅ working
 
 See [isaacsim/README.md](/isaacsim/README.md) and [isaaclab/README.md](/isaaclab/README.md) for more info.
@@ -16,8 +16,9 @@ Other Isaac Sim versions are available on separate git branches named after the
 Isaac Sim version they package (e.g. the `v5.1.0` branch packages Isaac Sim
 5.1.0). The `main` branch always tracks the latest **stable** version.
 
-> Note that the isaacsim-selector has been removed in v6.0.0 and with it the
-> default flake entry-point has also been changed to just `isaacsim`
+Isaac Sim is available through `#isaacsim`; the default IsaacLab packaging
+approach is the uv2nix candidate exposed through `#isaaclab`. Both commands are
+available in the default development shell.
 
 ## Usage
 
@@ -60,15 +61,17 @@ nix run github:urban-prah/isaac-flake#isaacsim
 - Apps/scripts which try to pip install dependencies won't work (like
   jupyter-notebook.sh). Current workaround is to use virtual environments.
 
-- **Overridden app paths**: `isaaclab.python.kit` requires modifications to
-  redirect certain paths to point outside the /nix/store (see [README](./isaaclab/README.md))
+- **IsaacLab writable source**: The package initializes a persistent source workspace
+  while its simulator and dependencies stay in the store. Upstream Python/.kit files
+  stay unchanged. See [IsaacLab packaging](./isaaclab/PACKAGING.md) for the startup
+  workaround and [verification](./isaaclab/VERIFICATION.md) for the video API limitation.
 
 ## Contributing
 
 Pull requests are welcome. If you use this flake or run into issues, consider
 improving the Nix package definitions and submitting a PR. Specifically:
 
-- Fix broken or incomplete package definitions (e.g. Isaac Lab)
+- Improve incomplete package definitions and validate release candidates
 - Add missing flags or overrides
 - Improve patch files for upstream compatibility
 - Add support for additional platforms (`aarch64`, etc.)
