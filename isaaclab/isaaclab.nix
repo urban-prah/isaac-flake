@@ -12,9 +12,9 @@
   extraDependencies ? {},
   pythonOverrides ? [],
   constraintProjects ? [],
-  name ? "isaaclab-3.0.0-EA",
+  name ? "isaaclab-3.0.0",
 }: let
-  version = "3.0.0-EA";
+  version = "3.0.0";
   tag = "v${version}";
   revision = isaaclab-src.rev;
   source = callPackage ./source.nix {
@@ -60,7 +60,7 @@ in
       tests.dependencies = assembled.check;
     };
     meta = {
-      description = "IsaacLab Early Access with an offline uv2nix environment for Isaac Sim";
+      description = "IsaacLab with an offline uv2nix environment for Isaac Sim";
       homepage = "https://github.com/isaac-sim/IsaacLab/releases/tag/${tag}";
       license = lib.licenses.bsd3;
       platforms = ["x86_64-linux"];

@@ -5,9 +5,9 @@ Official support status can be tracked in [#268](https://github.com/isaac-sim/Is
 
 ## Packages
 
-- [Isaac Sim 6.1.0](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/index.html) ✅ working
-- [Isaac Sim MCP](./isaacsim/mcp/README.md) — ✅ working
-- [IsaacLab v3.0.0-EA](./isaaclab/README.md) — uv2nix release candidate
+- [Isaac Sim 6.2.0](https://docs.isaacsim.omniverse.nvidia.com/6.2.0/index.html)
+- [Isaac Sim MCP 2.2.3](./isaacsim/mcp/README.md)
+- [IsaacLab v3.0.0](./isaaclab/README.md) — uv2nix packaging
 - [Isaac Sim WebRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/6.0.1/installation/manual_livestream_clients.html) ✅ working
 
 See [isaacsim/README.md](/isaacsim/README.md) and [isaaclab/README.md](/isaaclab/README.md) for more info.
@@ -17,7 +17,7 @@ Isaac Sim version they package (e.g. the `v5.1.0` branch packages Isaac Sim
 5.1.0). The `main` branch always tracks the latest **stable** version.
 
 Isaac Sim is available through `#isaacsim`; the default IsaacLab packaging
-approach is the uv2nix candidate exposed through `#isaaclab`. Both commands are
+approach is the uv2nix package exposed through `#isaaclab`. Both commands are
 available in the default development shell.
 
 ## Usage
@@ -54,8 +54,8 @@ nix run github:urban-prah/isaac-flake#isaacsim
 - We haven't yet tested on platforms outside NixOS. It technically should work with [NixGL](https://github.com/nix-community/nixgl).
 
 - **NVIDIA driver version**: Follow the version-specific
-  [NVIDIA requirements](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/installation/requirements.html).
-  NVIDIA lists Linux 595.58.03 as its tested x86_64 driver for 6.1.0.
+  [NVIDIA requirements](https://docs.isaacsim.omniverse.nvidia.com/6.2.0/installation/requirements.html).
+  NVIDIA lists Linux 595.58.03 as its tested x86_64 driver for 6.2.0.
 - **x86_64 only**: Only `x86_64-linux` is supported for now.
 
 - Apps/scripts which try to pip install dependencies won't work (like

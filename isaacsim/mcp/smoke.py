@@ -41,6 +41,7 @@ def index_fixtures():
     data = Path(isaacsim_fns.__file__).parent / "data"
     stats = {}
     vectors = {}
+    indexes = set()
     for index_path in sorted(data.rglob("index.faiss")):
         index = faiss.read_index(str(index_path))
         assert index.ntotal > 0, f"Empty index: {index_path}"
@@ -51,16 +52,17 @@ def index_fixtures():
             "vectors": index.ntotal,
             "dimensions": index.d,
         }
-        if "6.1" in index_path.parts:
-            kind = (
-                "settings"
-                if "settings" in index_path.parts
-                else "code"
-                if "code_examples" in index_path.parts
-                else "extensions"
-            )
+        version, section, *_ = index_path.relative_to(data).parts
+        indexes.add((version, section))
+        if version == "6.2":
+            kind = "code" if section == "code_examples" else section
             vectors[kind] = index.reconstruct(0).tolist()
-    assert len(stats) == 6 and set(vectors) == {"extensions", "code", "settings"}, stats
+    expected = {
+        (version, section)
+        for version in ("6.0", "6.1", "6.2")
+        for section in ("extensions", "code_examples", "settings")
+    }
+    assert indexes == expected and len(stats) == len(expected), stats
     return stats, vectors
 
 
@@ -225,6 +227,7 @@ def main():
                 env = os.environ.copy()
                 # Exercise launcher defaults, independent of caller consent/cache state.
                 for name in (
+                    "MCP_ISAACSIM_VERSION",
                     "NAT_TELEMETRY_ENABLED",
                     "KIT_MCP_DISABLE_USAGE_LOGGING",
                     "PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION",
@@ -235,7 +238,6 @@ def main():
                         "NVIDIA_API_KEY": "nvapi-offline-package-check",
                         "KIT_EMBEDDER_BACKEND": "local",
                         "KIT_LOCAL_EMBEDDER_URL": f"http://127.0.0.1:{fixture.server_port}",
-                        "MCP_ISAACSIM_VERSION": "6.1",
                         "OVAI_RERANK": "false",
                         "TELEMETRY_ENABLED": "false",
                         "HOME": tmp,

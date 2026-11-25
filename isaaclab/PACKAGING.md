@@ -1,7 +1,7 @@
 # IsaacLab uv2nix packaging
 
-The release candidate packages the official `v3.0.0-EA` source and `uv.lock` with
-Isaac Sim 6.1.0. Nix fetches declared artifacts and builds dependencies offline.
+The package uses the official `v3.0.0` source and `uv.lock` with Isaac Sim 6.2.0.
+Nix fetches declared artifacts and builds dependencies offline.
 The launcher uses the simulator's bundled Python without activating a virtualenv.
 
 ## Definitions
@@ -54,8 +54,10 @@ Two upstream compatibility corrections remain explicit:
 Native wheels receive their declared Python dependencies and nested library
 search paths through `autoPatchelf` and `addAutoPatchelfSearchPath`. Targeted
 nixpkgs inputs supply cuFile's RDMA libraries, NVSHMEM's MPI/PMIx/UCX/libfabric/RDMA
-libraries, Numba's TBB, Open3D's udev and ovstage's hwloc/libXt. Torchaudio and
-Open3D need explicit native Torch dependency edges omitted from their metadata.
+libraries, Numba's TBB, Open3D's udev and ovstage's hwloc/libXt. Open3D's bundled
+Torch plugin still links the CUDA 12 runtime even though IsaacLab uses CUDA 13.
+Torchaudio and Open3D need explicit native Torch dependency edges omitted from
+their metadata.
 Only `libcuda.so.1` is deferred to the host driver; other missing libraries fail
 builds. The Open3D ML Torch plugin's execution is outside the verified scope.
 

@@ -23,11 +23,12 @@ sys.argv = sys.argv[:1]
 caller = Path.cwd()
 
 import torch
-from isaaclab.app import AppLauncher
+from isaaclab.app import launch_simulation
 
-application = AppLauncher(headless=True).app
-try:
+# This probe uses Kit tokens and updates directly, with no task config.
+with launch_simulation(None, {"headless": True, "require_kit": True}):
     import carb.tokens
+    from omni.kit.app import get_app
     import isaaclab
     import numba
     import numpy as np
@@ -68,7 +69,7 @@ try:
     cache = carb.tokens.get_tokens_interface().resolve("${cache}")
     assert not cache.startswith("/nix/store/"), cache
     for _ in range(3):
-        application.update()
+        get_app().update()
     assert Path.cwd() == caller
     result = {
         "status": "passed",
@@ -92,5 +93,3 @@ try:
     args.output.write_text(result_json + "\n")
     print(result_json, flush=True)
     print(f"ISAACLAB_SMOKE_PASSED: {args.output}", flush=True)
-finally:
-    application.close()

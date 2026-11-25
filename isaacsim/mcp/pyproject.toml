@@ -1,9 +1,9 @@
 # Runtime dependency workspace for the pinned NVIDIA MCP source.
 [project]
 name = "isaacsim-mcp-environment"
-version = "2.2.2"
+version = "2.2.3"
 requires-python = ">=3.13,<3.14"
-dependencies = ["isaacsim-mcp==2.2.2", "ovgenai-retrieval==0.2.0"]
+dependencies = ["isaacsim-mcp==2.2.3", "ovgenai-retrieval==0.2.0"]
 
 [tool.uv]
 package = false
@@ -19,7 +19,6 @@ constraint-dependencies = [
   "async-timeout==5.0.1",
   "attrs==25.4.0",
   "authlib==1.7.2",
-  "backoff==1.11.1",
   "beautifulsoup4==4.14.3",
   "boto3==1.40.61",
   "botocore==1.40.61",
@@ -107,10 +106,9 @@ constraint-dependencies = [
   "openai==2.41.1",
   "openevals==0.2.0",
   "openinference-semantic-conventions==0.1.25",
-  # Upstream locks 2022 OTLP/proto code with a modern SDK and protobuf.
-  # Align the family with its SDK; proto 1.42.1 requires protobuf >=5,<7.
   "opentelemetry-api==1.42.1",
   "opentelemetry-exporter-otlp==1.42.1",
+  "opentelemetry-exporter-otlp-proto-common==1.42.1",
   "opentelemetry-exporter-otlp-proto-grpc==1.42.1",
   "opentelemetry-exporter-otlp-proto-http==1.42.1",
   "opentelemetry-proto==1.42.1",
@@ -181,6 +179,6 @@ constraint-dependencies = [
 ]
 
 [tool.uv.sources]
-isaacsim-mcp = { git = "https://github.com/NVIDIA-Omniverse/kit-usd-agents.git", rev = "8df4ed105e4202dfb6dff836bd1871bf5eccd308", subdirectory = "source/mcp/isaacsim_mcp" }
-isaacsim-fns = { git = "https://github.com/NVIDIA-Omniverse/kit-usd-agents.git", rev = "8df4ed105e4202dfb6dff836bd1871bf5eccd308", subdirectory = "source/aiq/isaacsim_fns" }
-ovgenai-retrieval = { git = "https://github.com/NVIDIA-Omniverse/kit-usd-agents.git", rev = "8df4ed105e4202dfb6dff836bd1871bf5eccd308", subdirectory = "source/aiq/ovgenai_retrieval" }
+isaacsim-mcp = { git = "https://github.com/NVIDIA-Omniverse/kit-usd-agents.git", rev = "4ce780d659078e7e7c12448778d3b05c842e6ffb", subdirectory = "source/mcp/isaacsim_mcp" }
+isaacsim-fns = { git = "https://github.com/NVIDIA-Omniverse/kit-usd-agents.git", rev = "4ce780d659078e7e7c12448778d3b05c842e6ffb", subdirectory = "source/aiq/isaacsim_fns" }
+ovgenai-retrieval = { git = "https://github.com/NVIDIA-Omniverse/kit-usd-agents.git", rev = "4ce780d659078e7e7c12448778d3b05c842e6ffb", subdirectory = "source/aiq/ovgenai_retrieval" }

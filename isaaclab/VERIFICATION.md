@@ -1,4 +1,7 @@
-# Release candidate verification
+# Early Access verification (historical)
+
+The results below apply to the Early Access package, not to `v3.0.0` GA.
+For GA, run the current build and smoke checks in [README.md](README.md).
 
 The uv2nix candidate was validated with IsaacLab `v3.0.0-EA`, Isaac Sim 6.1.0 and
 an independent consumer project. Python dependencies and the simulator remain
