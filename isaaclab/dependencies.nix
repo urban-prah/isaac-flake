@@ -54,8 +54,8 @@
             wheel = [];
           };
       });
-      # The EA lock overrides NumPy beyond Numba's supported range and
-      # cmeel-boost's <2.4 constraint. Match the control package's correction.
+      # The upstream lock still selects NumPy beyond Numba's supported
+      # range and cmeel-boost's <2.4 constraint.
       numpy = prev.numpy.overrideAttrs {
         version = "2.3.5";
         src = pkgs.fetchPypi {
@@ -127,7 +127,7 @@
     # metadata without the XR extras that also install a second Isaac Sim.
     isaaclab-teleop = [];
     isaaclab-mimic = [];
-    # Open3D's wheel imports these despite the EA lock's missing edges.
+    # Open3D's wheel imports this despite the lock's missing edge.
     ipywidgets = [];
   };
 in {

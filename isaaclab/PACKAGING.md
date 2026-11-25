@@ -1,7 +1,7 @@
 # IsaacLab uv2nix packaging
 
-The release candidate packages the official `v3.0.0-EA` source and `uv.lock` with
-Isaac Sim 6.1.0. Nix fetches declared artifacts and builds dependencies offline.
+The package uses the official `v3.0.0` source and `uv.lock` with Isaac Sim 6.2.0.
+Nix fetches declared artifacts and builds dependencies offline.
 The launcher uses the simulator's bundled Python without activating a virtualenv.
 
 ## Definitions

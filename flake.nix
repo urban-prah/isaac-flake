@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     git-hooks.url = "github:cachix/git-hooks.nix";
     isaaclab-src = {
-      url = "github:isaac-sim/IsaacLab/v3.0.0-EA";
+      url = "github:isaac-sim/IsaacLab/v3.0.0";
       flake = false;
     };
     pyproject-nix = {

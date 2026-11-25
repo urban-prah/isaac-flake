@@ -1,9 +1,9 @@
 # IsaacLab
 
-The default IsaacLab packaging approach is a uv2nix release candidate for NVIDIA's
-`v3.0.0-EA` tag, paired with Isaac Sim 6.1.0. The source input is locked to
-`ae37b028ea415c91ea2bc32609efcd759ed2b974`. This is Early Access, rather than the
-moving `release/3.0.0` branch.
+The uv2nix package follows NVIDIA's `v3.0.0` release, paired with Isaac Sim
+6.2.0. The source input is locked to `e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4`.
+See the [upstream migration notes](https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0#changes-since-early-access)
+for changes to `AppLauncher`, task configuration, and camera observations.
 
 Upstream `uv.lock` supplies Python dependencies and fixed artifacts. Nix builds
 an immutable dependency environment; there is no maintained wheel manifest or
@@ -56,17 +56,17 @@ viewer:
 
 ```bash
 cd "$(isaaclab-workspace)"
-isaaclab -p scripts/demos/h1_locomotion.py --viz kit
+isaaclab -p examples/demos/h1_locomotion.py --viz kit
 ```
 
-Newton-compatible scripts can select `--viz newton` (the Newton GL viewer).
+Newton-compatible scripts can select `--viz newton_gl` (the Newton GL viewer).
 For example, a bounded Cartpole run can select Newton physics explicitly:
 
 ```bash
 cd "$(isaaclab-workspace)"
-isaaclab -p scripts/environments/zero_agent.py \
+isaaclab zero_agent \
   --task Isaac-Cartpole-Direct --num_envs 1 --max_steps 300 \
-  --viz newton physics=newton_mjwarp
+  --viz newton_gl physics=newton_mjwarp
 ```
 
 ## Writable source and runtime state
@@ -96,7 +96,7 @@ Run upstream demos from the workspace to keep these outputs outside a repository
 
 ```bash
 cd "$(isaaclab-workspace)"
-isaaclab -p scripts/demos/sensors/cameras.py --headless
+isaaclab -p examples/sensors/cameras.py --headless
 ```
 
 An explicit script path into `/nix/store` still names an immutable file. Use the

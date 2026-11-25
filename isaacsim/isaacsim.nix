@@ -1,8 +1,9 @@
 {
   lib,
   stdenv,
-  fetchzip,
+  fetchurl,
   # nativeBuildInputs
+  unzip,
   makeWrapper,
   addDriverRunpath,
   writeShellScriptBin,
@@ -26,14 +27,14 @@
   extraLibs ? [],
 }: let
   pname = "isaacsim";
-  version = "6.1.0";
+  version = "6.2.0";
   description = "NVIDIA Isaac Sim™ is a reference application built on NVIDIA Omniverse that enables developers to develop, simulate, and test AI-driven robots in physically-based virtual environments.";
 
-  src = fetchzip {
-    name = "isaac-sim-${version}";
+  # NVIDIA publishes the SHA-256 of the ZIP. Unpack during the build so
+  # the store does not have to keep a second fully extracted installation.
+  src = fetchurl {
     url = "https://downloads.isaacsim.nvidia.com/isaac-sim-standalone-${version}-linux-x86_64.zip";
-    sha256 = "sha256-myL+p2SjYBGvu7MlvV4EVzVCKRqmd6ugugS/MiIavy8=";
-    stripRoot = false;
+    hash = "sha256-qsT5Bl821W9WplI5MXEPrT6pw+XusGe3gfpTCY/PGfI=";
   };
   patches = [./ros.patch];
 
@@ -62,11 +63,13 @@ in
       mpi
     ];
     nativeBuildInputs = [
+      unzip
       makeWrapper
       addDriverRunpath
       copyDesktopItems
     ];
 
+    sourceRoot = "."; # NVIDIA’s ZIP has no enclosing directory.
     dontConfigure = true;
     dontBuild = true;
     dontPatchELF = true;
