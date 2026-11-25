@@ -150,7 +150,7 @@ parity. Manual verification complements the automated startup check.
 
 This flake also provides `isaacsim-mcp`, NVIDIA's independent documentation
 server. Run `nix run .#isaacsim-mcp -- --env-file /absolute/path/to/server.env`
-and connect your MCP client to `http://127.0.0.1:9904/mcp`. It ships the 6.1
-documentation corpus and provides five search/reference tools. See
+and connect your MCP client to `http://127.0.0.1:9904/mcp`. It defaults to the
+6.2 documentation corpus and provides five search/reference tools. See
 [mcp/README.md](./mcp/README.md) for credentials, local NIM configuration,
 package checks, and the scope of its tools.

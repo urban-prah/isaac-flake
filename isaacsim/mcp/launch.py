@@ -42,7 +42,6 @@ def main():
         load_dotenv(args.env_file, override=False)
     # Apply package defaults after the explicit env file, preserving overrides.
     defaults = {
-        "MCP_ISAACSIM_VERSION": "6.1",
         "KIT_MCP_DISABLE_USAGE_LOGGING": "true",
         "NAT_TELEMETRY_ENABLED": "false",
         "OVAI_RERANK_BACKEND": "nvidia",

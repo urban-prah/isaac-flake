@@ -5,12 +5,12 @@
   uv2nix,
   pyproject-build-systems,
 }: let
-  version = "2.2.2";
-  rev = "8df4ed105e4202dfb6dff836bd1871bf5eccd308";
+  version = "2.2.3";
+  rev = "4ce780d659078e7e7c12448778d3b05c842e6ffb";
   upstream = pkgs.fetchurl {
     name = "kit-usd-agents-${rev}.tar.gz";
     url = "https://codeload.github.com/NVIDIA-Omniverse/kit-usd-agents/tar.gz/${rev}";
-    hash = "sha256-KvxPVx9s2bBPmGez6zLGRtD80mb7RH/OLIR4bemBKwM=";
+    hash = "sha256-6UAdpc0pobrWrFTmD1bWEriV1XE7Y9JOJV/255e395E=";
   };
   lfsFiles = builtins.fromJSON (builtins.readFile ./mcp/lfs-files.json);
   data = pkgs.runCommand "isaacsim-mcp-data-${version}" {} ''
