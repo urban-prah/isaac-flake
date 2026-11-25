@@ -75,11 +75,15 @@
       pkgs.lib.unique (map (package: package.name)
         (pkgs.lib.filter (package: package.source ? registry) lock.package));
     availableNames = pkgs.lib.filter (name: prev ? ${name}) registryNames;
+    nvshmemLibraries = [pkgs.openmpi pkgs.pmix pkgs.ucx pkgs.libfabric pkgs.rdma-core];
     systemLibraries = {
+      nvidia-cufile = [pkgs.rdma-core];
       nvidia-cufile-cu12 = [pkgs.rdma-core];
-      nvidia-nvshmem-cu12 = [pkgs.openmpi pkgs.pmix pkgs.ucx pkgs.libfabric pkgs.rdma-core];
+      nvidia-nvshmem-cu12 = nvshmemLibraries;
+      nvidia-nvshmem-cu13 = nvshmemLibraries;
       numba = [pkgs.tbb];
-      open3d = [pkgs.udev];
+      # The bundled Torch ops still link CUDA 12 even with a CUDA 13 torch.
+      open3d = [pkgs.udev pkgs.cudaPackages_12.cuda_cudart];
       ovstage = [pkgs.hwloc pkgs.libxt];
     };
   in

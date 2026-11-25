@@ -4,6 +4,7 @@
   fetchurl,
   # nativeBuildInputs
   unzip,
+  glibcLocalesUtf8,
   makeWrapper,
   addDriverRunpath,
   writeShellScriptBin,
@@ -64,6 +65,7 @@ in
     ];
     nativeBuildInputs = [
       unzip
+      glibcLocalesUtf8 # unzip’s setup hook needs UTF-8 for archive filenames.
       makeWrapper
       addDriverRunpath
       copyDesktopItems
