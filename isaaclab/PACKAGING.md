@@ -47,13 +47,13 @@ pyproject.nix editable hook resolves the source root without patching upstream.
 
 Two upstream compatibility corrections remain explicit:
 
-- NumPy 2.3.5 replaces the lock's incompatible 2.5.1 override, satisfying Numba
-  and cmeel-boost's `<2.4` constraint. The nixpkgs NumPy source builder uses a
-  fixed-hash 2.3.5 source archive and nixpkgs' OpenBLAS 0.3.32. The standard
-  pyproject.nix `nixpkgsPrebuilt` adapter preserves the uv2nix dependency graph
-  without nixpkgs Python-path injection. This avoids the fork-unsafe OpenBLAS
-  bundled in NumPy's wheel. The upstream lock supplies SciPy 1.18.1 with a fixed
-  vendored OpenBLAS. Neither launcher forces a BLAS thread count.
+- NumPy 2.4.6 replaces the lock's incompatible 2.5.1. Numba 0.64 requires
+  `numpy>=1.22,<2.5`; cmeel-boost 1.90 now requires only `numpy>=2.0`, without
+  its previous `<2.4` limit. Version 2.4.6 is the latest compatible stable wheel
+  as of 2026-11-27, not an exact requirement of IsaacLab. It bundles fixed
+  OpenBLAS 0.3.31.188.0. The upstream lock supplies SciPy 1.18.1 with fixed
+  OpenBLAS 0.3.31.dev. Both use the existing uv2nix wheel builder and native-wheel
+  fixups; no source-build adapter or BLAS thread cap is needed.
 - Open3D's omitted ipywidgets dependency is selected from the same lock; uv2nix
   follows its transitive graph.
 
@@ -110,10 +110,13 @@ nix build .#isaaclab
 nix develop --command isaaclab -p isaaclab/smoke.py
 ```
 
-`nix flake check` includes a CPU-only concurrent-native-fork regression for the
-BLAS libraries loaded by both NumPy and SciPy, with multiple threads enabled.
-Python's GIL serializes `os.fork()`, so this check uses a small native reproducer.
-The generic GPU smoke also checks CuDNN convolution and its gradients.
+`nix flake check` automatically runs `checks.x86_64-linux.isaaclab-openblas-fork`,
+a CPU-only concurrent-native-fork regression for the BLAS libraries loaded by
+both NumPy and SciPy, with multiple threads enabled. This is a build-time check,
+not an installed command or flake app. Python's GIL serializes `os.fork()`, so it
+uses a small native reproducer. The separate manual GPU smoke checks Kit, CuDNN
+convolution and its gradients. A passing Kit launch alone cannot rule out the
+intermittent native-fork race.
 
 Review upstream dependency changes and each compatibility override. Verify a
 real consumer's simulation, training and existing checkpoint contract, not only

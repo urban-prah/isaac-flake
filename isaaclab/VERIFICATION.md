@@ -6,14 +6,13 @@ IsaacLab source `968fb369b72b5b17d1d1fc7ad17c834d2bc23ef0` was tested with
 Isaac Sim 6.2.0 on NixOS x86_64 and an NVIDIA RTX PRO 5000 Blackwell, driver
 595.71.05. This is a pre-release branch snapshot, not the final 3.1.0 release.
 
-- `nix build .#isaaclab` passed. The reused nixpkgs NumPy source builder ran
-  47,361 passing tests, with 2,487 skips, 33 expected failures and five unexpected
-  passes under its existing test policy.
+- `nix build .#isaaclab` passed with NumPy 2.4.6 from a fixed-hash wheel.
+  The package uses its existing uv2nix wheel builder, without a nixpkgs adapter.
 - `nix flake check --option allow-import-from-derivation false` passed, including
   dependency metadata, consumer extras, workspace integrity and Nix lint.
 - The CPU-only fork regression passed 20 runs for each actual BLAS library:
-  NumPy 2.3.5 with nixpkgs OpenBLAS 0.3.32/OpenMP, and SciPy 1.18.1 with its
-  vendored OpenBLAS 0.3.31.dev/pthreads. Each run forks from four native threads
+  NumPy 2.4.6 with vendored OpenBLAS 0.3.31.188.0/pthreads, and SciPy 1.18.1
+  with vendored OpenBLAS 0.3.31.dev/pthreads. Each run forks from four native threads
   twelve times per thread. Both libraries used four BLAS threads. The same test
   timed out on the previous NumPy wheel's OpenBLAS 0.3.30.
 - `nix develop --command isaaclab -p isaaclab/smoke.py` passed without inherited
@@ -21,10 +20,14 @@ Isaac Sim 6.2.0 on NixOS x86_64 and an NVIDIA RTX PRO 5000 Blackwell, driver
   updates, native dependencies, RL imports, writable source/cache paths and CUDA
   matrix multiplication. CuDNN 91900 convolution forward/backward produced finite
   outputs and gradients on the visible GPU.
+- A caller-supplied `OPENBLAS_NUM_THREADS=3` survived the packaged launcher,
+  and both loaded BLAS libraries reported three threads after matrix operations.
 
 The source remains unpatched. Neither launcher forces a BLAS thread count.
-NumPy now uses OpenMP BLAS, so `OMP_NUM_THREADS`, rather than
-`OPENBLAS_NUM_THREADS`, controls that provider. SciPy retains pthread BLAS.
+Both NumPy and SciPy now use pthread BLAS and honor `OPENBLAS_NUM_THREADS`.
+Numba 0.64 requires NumPy `<2.5`; cmeel-boost 1.90 no longer requires `<2.4`.
+The original PR revision retained an obsolete NumPy 2.3.5 constraint and used a
+source-build adapter. Its NumPy source-suite results do not apply to this wheel.
 
 Kit startup reports upstream deprecation in 3.1 and removal in 3.2. Existing
 `/usr/bin/lscpu`, extension and protobuf warnings remain. These checks do not

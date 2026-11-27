@@ -6,15 +6,7 @@ import sys
 
 import numpy as np
 from scipy.linalg.blas import dgemm
-from threadpoolctl import OpenBLASController, register, threadpool_info
-
-
-# threadpoolctl skips generic libblas names on Linux. nixpkgs' BLAS output is
-# a complete OpenBLAS copy under that name, so use its public controller API.
-@register
-class NixBLASController(OpenBLASController):
-    filename_prefixes = ("libblas.so",)
-
+from threadpoolctl import threadpool_info
 
 left = np.full((8, 8), 2.0)
 right = np.ones((8, 8))

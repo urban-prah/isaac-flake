@@ -93,6 +93,7 @@
     in {
       inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) isaaclab;
       isaaclab-dependencies = self.packages.${pkgs.stdenv.hostPlatform.system}.isaaclab.tests.dependencies;
+      # Keep the fork regression in flake check; the manual Kit smoke needs a GPU.
       isaaclab-openblas-fork =
         pkgs.runCommandCC "isaaclab-openblas-fork-check" {
           nativeBuildInputs = [self.packages.${pkgs.stdenv.hostPlatform.system}.isaaclab.environment];

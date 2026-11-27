@@ -4,8 +4,8 @@ The uv2nix package follows NVIDIA's `release/3.1.0` branch, paired with Isaac Si
 6.2.0. This is a pre-release snapshot, not a final 3.1.0 tag. As of 2026-11-27,
 the source input is locked to `968fb369b72b5b17d1d1fc7ad17c834d2bc23ef0`.
 The snapshot includes the [SciPy/OpenBLAS fork fix](https://github.com/isaac-sim/IsaacLab/pull/8993).
-NumPy retains version 2.3.5 for Numba/cmeel compatibility, built against nixpkgs'
-OpenBLAS 0.3.32 instead of the affected library in its wheel.
+NumPy uses the 2.4.6 wheel, which satisfies Numba 0.64's `<2.5` constraint
+and bundles fixed OpenBLAS. The earlier 2.3.5 pin is no longer needed.
 
 Upstream `uv.lock` supplies Python dependencies and fixed artifacts. Nix builds
 an immutable dependency environment; there is no maintained wheel manifest or
