@@ -7,14 +7,15 @@ Official support status can be tracked in [#268](https://github.com/isaac-sim/Is
 
 - [Isaac Sim 6.2.0](https://docs.isaacsim.omniverse.nvidia.com/6.2.0/index.html)
 - [Isaac Sim MCP 2.2.3](./isaacsim/mcp/README.md)
-- [IsaacLab v3.0.0](./isaaclab/README.md) — uv2nix packaging
+- [IsaacLab release/3.1.0 snapshot](./isaaclab/README.md), uv2nix packaging
 - [Isaac Sim WebRTC Streaming Client](https://docs.isaacsim.omniverse.nvidia.com/6.0.1/installation/manual_livestream_clients.html) ✅ working
 
 See [isaacsim/README.md](/isaacsim/README.md) and [isaaclab/README.md](/isaaclab/README.md) for more info.
 
 Other Isaac Sim versions are available on separate git branches named after the
 Isaac Sim version they package (e.g. the `v5.1.0` branch packages Isaac Sim
-5.1.0). The `main` branch always tracks the latest **stable** version.
+5.1.0). IsaacLab can use a pinned release-branch snapshot before its final tag;
+see [IsaacLab](./isaaclab/README.md) for the exact revision and release status.
 
 Isaac Sim is available through `#isaacsim`; the default IsaacLab packaging
 approach is the uv2nix package exposed through `#isaaclab`. Both commands are

@@ -58,8 +58,19 @@ with launch_simulation(None, {"headless": True, "require_kit": True}):
         values = torch.ones((4, 4), device=f"cuda:{index}")
         product = values @ values
         assert torch.isfinite(product).all() and torch.all(product == 4)
+        # Matmul does not exercise CuDNN's dynamically loaded components.
+        assert torch.backends.cudnn.is_available()
+        convolution = torch.nn.Conv2d(3, 4, 3).to(f"cuda:{index}")
+        inputs = torch.ones((2, 3, 16, 16), device=f"cuda:{index}", requires_grad=True)
+        outputs = convolution(inputs)
+        assert outputs.is_cuda and torch.isfinite(outputs).all()
+        outputs.square().mean().backward()
+        assert inputs.grad is not None and torch.isfinite(inputs.grad).all()
+        for parameter in convolution.parameters():
+            assert parameter.grad is not None and torch.isfinite(parameter.grad).all()
         torch.cuda.synchronize(index)
-        cuda.append({"device": index, "name": torch.cuda.get_device_name(index), "finite_matmul": True})
+        cuda.append({"device": index, "name": torch.cuda.get_device_name(index),
+                     "finite_matmul": True, "cudnn_convolution_backward": True})
     assert cuda, "No CUDA devices available"
     workspace = Path(os.environ["ISAAC_LAB_DIR"])
     assert not workspace.is_relative_to("/nix/store")
@@ -75,10 +86,11 @@ with launch_simulation(None, {"headless": True, "require_kit": True}):
         "status": "passed",
         "versions": {
             name: importlib.metadata.version(name)
-            for name in ["torch", "numpy", "numba", "pin", "pin-pink", "open3d", "newton",
-                         "warp-lang", "skrl", "rsl-rl-lib", "stable-baselines3", "rl-games"]
+            for name in ["torch", "numpy", "scipy", "numba", "pin", "pin-pink", "open3d", "newton",
+                         "warp-lang", "ovrtx", "skrl", "rsl-rl-lib-extras", "stable-baselines3", "rl-games"]
         },
         "cuda": cuda,
+        "cudnn_version": torch.backends.cudnn.version(),
         "kit_updates": 3,
         "cache": cache,
         "cwd": str(caller),

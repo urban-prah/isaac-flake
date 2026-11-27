@@ -1,9 +1,11 @@
 # IsaacLab
 
-The uv2nix package follows NVIDIA's `v3.0.0` release, paired with Isaac Sim
-6.2.0. The source input is locked to `e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4`.
-See the [upstream migration notes](https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0#changes-since-early-access)
-for changes to `AppLauncher`, task configuration, and camera observations.
+The uv2nix package follows NVIDIA's `release/3.1.0` branch, paired with Isaac Sim
+6.2.0. This is a pre-release snapshot, not a final 3.1.0 tag. As of 2026-11-27,
+the source input is locked to `968fb369b72b5b17d1d1fc7ad17c834d2bc23ef0`.
+The snapshot includes the [SciPy/OpenBLAS fork fix](https://github.com/isaac-sim/IsaacLab/pull/8993).
+NumPy uses the 2.4.6 wheel, which satisfies Numba 0.64's `<2.5` constraint
+and bundles fixed OpenBLAS. The earlier 2.3.5 pin is no longer needed.
 
 Upstream `uv.lock` supplies Python dependencies and fixed artifacts. Nix builds
 an immutable dependency environment; there is no maintained wheel manifest or
@@ -26,7 +28,8 @@ nix develop --command isaaclab -p isaaclab/smoke.py
 
 The smoke test prints JSON and writes a unique result file in `/tmp` by default.
 It needs the NVIDIA driver and exercises Kit startup, native dependencies,
-framework imports and each visible CUDA device. It is a manual runtime check;
+framework imports, matrix multiplication and CuDNN convolution forward/backward
+on each visible CUDA device. It is a manual runtime check;
 `nix flake check` does not start the simulator or require a GPU.
 
 `isaaclab` invokes the official Python console CLI with Isaac Sim's bundled
@@ -50,14 +53,24 @@ The default environment includes the upstream teleop and Mimic source modules
 needed by that entry point and task configurations. The complete XR/CloudXR and
 Mimic dataset-generation dependency extras are not selected or verified.
 
-A viewer flag does not convert a demo to another backend. The H1 locomotion demo
-uses Kit viewport and input APIs and restricts physics to PhysX; retain its Kit
-viewer:
+The H1 locomotion demo defaults to Newton MuJoCo Warp physics and the Newton RTX
+viewer. The package includes the upstream `ovrtx` extra needed by that default:
 
 ```bash
 cd "$(isaaclab-workspace)"
-isaaclab -p examples/demos/h1_locomotion.py --viz kit
+isaaclab -p examples/demos/h1_locomotion.py --num_envs 1 --max_steps 300
 ```
+
+Select both physics and viewer to run the same demo with Isaac Sim PhysX and Kit:
+
+```bash
+isaaclab -p examples/demos/h1_locomotion.py \
+  --physics isaacsim_physx --viz kit --num_envs 1 --max_steps 300
+```
+
+`--viz newton_gl` selects the OpenGL viewer instead of RTX. `--viz none` disables
+the viewer for a headless run; this snapshot does not accept the old `--headless`
+launcher flag.
 
 Newton-compatible scripts can select `--viz newton_gl` (the Newton GL viewer).
 For example, a bounded Cartpole run can select Newton physics explicitly:
@@ -96,7 +109,7 @@ Run upstream demos from the workspace to keep these outputs outside a repository
 
 ```bash
 cd "$(isaaclab-workspace)"
-isaaclab -p examples/sensors/cameras.py --headless
+isaaclab -p examples/sensors/cameras.py --viz none
 ```
 
 An explicit script path into `/nix/store` still names an immutable file. Use the
@@ -125,7 +138,7 @@ path required by its editable package. The consumer owns its package metadata,
 editable source and any environment variables needed to locate that source.
 
 Project dependencies belong in the consumer. Pinocchio's `pin` and `pin-pink`
-belong in the base because the official IsaacLab tag requires them. Packages built
+belong in the base because the upstream IsaacLab manifest requires them. Packages built
 for other Python versions belong in their matching environments; they cannot be
 added to this Python 3.12 environment. Overlays compose package sets; they do not
 reconcile conflicting versions automatically. Run the composed package's
