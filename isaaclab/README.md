@@ -53,14 +53,24 @@ The default environment includes the upstream teleop and Mimic source modules
 needed by that entry point and task configurations. The complete XR/CloudXR and
 Mimic dataset-generation dependency extras are not selected or verified.
 
-A viewer flag does not convert a demo to another backend. The H1 locomotion demo
-uses Kit viewport and input APIs and restricts physics to PhysX; retain its Kit
-viewer:
+The H1 locomotion demo defaults to Newton MuJoCo Warp physics and the Newton RTX
+viewer. The package includes the upstream `ovrtx` extra needed by that default:
 
 ```bash
 cd "$(isaaclab-workspace)"
-isaaclab -p examples/demos/h1_locomotion.py --viz kit
+isaaclab -p examples/demos/h1_locomotion.py --num_envs 1 --max_steps 300
 ```
+
+Select both physics and viewer to run the same demo with Isaac Sim PhysX and Kit:
+
+```bash
+isaaclab -p examples/demos/h1_locomotion.py \
+  --physics isaacsim_physx --viz kit --num_envs 1 --max_steps 300
+```
+
+`--viz newton_gl` selects the OpenGL viewer instead of RTX. `--viz none` disables
+the viewer for a headless run; this snapshot does not accept the old `--headless`
+launcher flag.
 
 Newton-compatible scripts can select `--viz newton_gl` (the Newton GL viewer).
 For example, a bounded Cartpole run can select Newton physics explicitly:
@@ -99,7 +109,7 @@ Run upstream demos from the workspace to keep these outputs outside a repository
 
 ```bash
 cd "$(isaaclab-workspace)"
-isaaclab -p examples/sensors/cameras.py --headless
+isaaclab -p examples/sensors/cameras.py --viz none
 ```
 
 An explicit script path into `/nix/store` still names an immutable file. Use the

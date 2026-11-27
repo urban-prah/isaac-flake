@@ -34,6 +34,40 @@ Kit startup reports upstream deprecation in 3.1 and removal in 3.2. Existing
 verify downstream task APIs, training, checkpoint compatibility, distributed
 training or another GPU model. Consumers must re-verify their workflows.
 
+## Official launch verification, 2026-11-27
+
+The initial generic smoke forced Kit and did not test the H1 demo's default
+Newton RTX viewer. The official demo reproduced the missing `ovrtx` failure.
+The package now selects upstream's `ovrtx` extra, supplies NVIDIA's fixed wheel
+instead of its PyPI download stub, and provides hwloc for its native TBB plugin.
+Upstream demo and launcher source files remain unpatched.
+
+Live checks of the packaged outputs:
+
+- The `isaacsim` full windowed application reported `Isaac Sim Full App is loaded`
+  and `app ready`, then exited with status 0 after a controlled interrupt.
+- The separate Isaac Sim scene smoke completed 120 updates and advanced its
+  physics timeline by two seconds.
+- The official H1 demo initialized its published policy and default Newton
+  MuJoCo Warp physics with `OVRTXRenderer`. A headless run bounded to 30 steps
+  and a windowed run bounded to 300 steps both exited with status 0.
+- The same official H1 demo also passed a five-step headless run with explicit
+  `--physics isaacsim_physx --viz kit`.
+- The generic IsaacLab Kit/CUDA/CuDNN smoke and full flake checks passed with
+  OVRTX selected. The generic smoke records the installed OVRTX version.
+
+The windowed runs had user permission and used the exposed desktop launcher.
+Window presence and process results were checked, but the desktop driver could
+not capture those windows on the two-output niri session. Viewport appearance
+and keyboard interaction were not verified. The H1 run reported unavailable
+CUDA/OpenGL interop and used its upstream copy fallback. Existing SDK warnings
+remain; the runs do not establish warning-free rendering or performance.
+
+An initial overlapping full-app attempt exceeded its 180-second budget. This is
+not counted as a passing test. Runtime tests now use a host-wide `flock` across
+agent threads and run serially, with RAM/VRAM headroom checks, as required in
+[AGENTS.md](../AGENTS.md).
+
 ## Early Access verification, historical
 
 The results below apply only to the Early Access package.

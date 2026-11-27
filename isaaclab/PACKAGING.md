@@ -30,12 +30,18 @@ same definition, producing a separate immutable environment.
 ## Dependency provenance
 
 The official lock supplies core and the `skrl`, `sb3`, `rl-games`, `test`,
-`video` and `wandb` extras. Core includes RSL-RL and the Newton viewer. Teleop and
-Mimic workspace modules are included for keyboard teleoperation and task
-configurations. The complete Mimic and XR/CloudXR extras, OV runtimes and extra
-viewer frameworks are not selected. Linux x86_64 uses the locked CUDA 13.0
+`video`, `wandb` and `ovrtx` extras. Core includes RSL-RL and the Newton viewer.
+OVRTX supplies the renderer used by the official H1 demo's default Newton RTX
+viewer. Teleop and Mimic workspace modules are included for keyboard teleoperation
+and task configurations. The complete Mimic and XR/CloudXR extras, OvPhysX runtime
+and extra viewer frameworks are not selected. Linux x86_64 uses the locked CUDA 13.0
 PyTorch artifacts. Source-only packages retain their locked
 sources and receive explicit build backends through `resolveBuildSystem`.
+
+The upstream lock records OVRTX's PyPI download stub, not its binary wheel.
+`loadWorkspace` receives that lock with NVIDIA's fixed-hash x86_64 wheel added to
+the same package entry. The normal uv2nix wheel builder and native fixups handle
+it without executing the network-only stub during a sandboxed build.
 
 No generated `wheels.json`, wheelhouse or runtime UV installation is involved.
 The same pyproject.nix tooling already used by the Isaac Sim MCP package builds
@@ -107,6 +113,7 @@ update only that locked input:
 nix flake update isaaclab-src
 nix flake check
 nix build .#isaaclab
+nix develop --command isaacsim-python isaacsim/smoke.py
 nix develop --command isaaclab -p isaaclab/smoke.py
 ```
 
@@ -117,6 +124,11 @@ not an installed command or flake app. Python's GIL serializes `os.fork()`, so i
 uses a small native reproducer. The separate manual GPU smoke checks Kit, CuDNN
 convolution and its gradients. A passing Kit launch alone cannot rule out the
 intermittent native-fork race.
+
+Before proposing a PR revision, also run an affected official IsaacLab example
+through initialization, simulation steps and exit. For launcher changes, verify
+the example's default backend, not just an alternate viewer. Record headless and
+windowed results separately. See [the runtime verification policy](../AGENTS.md).
 
 Review upstream dependency changes and each compatibility override. Verify a
 real consumer's simulation, training and existing checkpoint contract, not only

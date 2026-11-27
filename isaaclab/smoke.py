@@ -87,7 +87,7 @@ with launch_simulation(None, {"headless": True, "require_kit": True}):
         "versions": {
             name: importlib.metadata.version(name)
             for name in ["torch", "numpy", "scipy", "numba", "pin", "pin-pink", "open3d", "newton",
-                         "warp-lang", "skrl", "rsl-rl-lib-extras", "stable-baselines3", "rl-games"]
+                         "warp-lang", "ovrtx", "skrl", "rsl-rl-lib-extras", "stable-baselines3", "rl-games"]
         },
         "cuda": cuda,
         "cudnn_version": torch.backends.cudnn.version(),

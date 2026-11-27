@@ -5,9 +5,31 @@
   uv2nix,
   pyproject-build-systems,
 }: let
-  workspace = uv2nix.lib.workspace.loadWorkspace {workspaceRoot = isaaclab-src;};
-  sourcePaths = (pkgs.lib.importTOML "${isaaclab-src}/pyproject.toml").tool.uv.sources;
   lock = pkgs.lib.importTOML "${isaaclab-src}/uv.lock";
+  workspace = uv2nix.lib.workspace.loadWorkspace {
+    workspaceRoot = isaaclab-src;
+    # PyPI locks only OVRTX's download-only stub. Supply NVIDIA's fixed wheel
+    # to the normal uv2nix builder instead of running that network installer.
+    uvLock =
+      lock
+      // {
+        package = map (package:
+          if package.name == "ovrtx"
+          then
+            package
+            // {
+              wheels = [
+                {
+                  url = "https://pypi.nvidia.com/ovrtx/ovrtx-${package.version}-py3-none-manylinux_2_35_x86_64.whl";
+                  hash = "sha256-HjbC5tiSZQzcRu21jr/WaK3bW3/TsLFf6fMrG5sSwO4=";
+                }
+              ];
+            }
+          else package)
+        lock.package;
+      };
+  };
+  sourcePaths = (pkgs.lib.importTOML "${isaaclab-src}/pyproject.toml").tool.uv.sources;
   members =
     pkgs.lib.filter (name: name != "isaaclab-dev")
     (builtins.attrNames workspace.deps.default);
@@ -89,6 +111,7 @@
       # The bundled Torch ops still link CUDA 12 even with a CUDA 13 torch.
       open3d = [pkgs.udev pkgs.cudaPackages_12.cuda_cudart];
       ovstage = [pkgs.hwloc pkgs.libxt];
+      ovrtx = [pkgs.hwloc];
     };
   in
     pkgs.lib.genAttrs availableNames (name:
@@ -130,7 +153,7 @@
     nativeWheelOverrides
   ]);
   selected = {
-    isaaclab-dev = ["skrl" "sb3" "rl-games" "test" "video" "wandb"];
+    isaaclab-dev = ["skrl" "sb3" "rl-games" "test" "video" "wandb" "ovrtx"];
     # Keyboard teleop and task configs need these workspace modules. Select their
     # metadata without the XR extras that also install a second Isaac Sim.
     isaaclab-teleop = [];
