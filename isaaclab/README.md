@@ -1,9 +1,11 @@
 # IsaacLab
 
-The uv2nix package follows NVIDIA's `v3.0.0` release, paired with Isaac Sim
-6.2.0. The source input is locked to `e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4`.
-See the [upstream migration notes](https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0#changes-since-early-access)
-for changes to `AppLauncher`, task configuration, and camera observations.
+The uv2nix package follows NVIDIA's `release/3.1.0` branch, paired with Isaac Sim
+6.2.0. This is a pre-release snapshot, not a final 3.1.0 tag. As of 2026-11-27,
+the source input is locked to `968fb369b72b5b17d1d1fc7ad17c834d2bc23ef0`.
+The snapshot includes the [SciPy/OpenBLAS fork fix](https://github.com/isaac-sim/IsaacLab/pull/8993).
+NumPy retains version 2.3.5 for Numba/cmeel compatibility, built against nixpkgs'
+OpenBLAS 0.3.32 instead of the affected library in its wheel.
 
 Upstream `uv.lock` supplies Python dependencies and fixed artifacts. Nix builds
 an immutable dependency environment; there is no maintained wheel manifest or
@@ -26,7 +28,8 @@ nix develop --command isaaclab -p isaaclab/smoke.py
 
 The smoke test prints JSON and writes a unique result file in `/tmp` by default.
 It needs the NVIDIA driver and exercises Kit startup, native dependencies,
-framework imports and each visible CUDA device. It is a manual runtime check;
+framework imports, matrix multiplication and CuDNN convolution forward/backward
+on each visible CUDA device. It is a manual runtime check;
 `nix flake check` does not start the simulator or require a GPU.
 
 `isaaclab` invokes the official Python console CLI with Isaac Sim's bundled
@@ -125,7 +128,7 @@ path required by its editable package. The consumer owns its package metadata,
 editable source and any environment variables needed to locate that source.
 
 Project dependencies belong in the consumer. Pinocchio's `pin` and `pin-pink`
-belong in the base because the official IsaacLab tag requires them. Packages built
+belong in the base because the upstream IsaacLab manifest requires them. Packages built
 for other Python versions belong in their matching environments; they cannot be
 added to this Python 3.12 environment. Overlays compose package sets; they do not
 reconcile conflicting versions automatically. Run the composed package's

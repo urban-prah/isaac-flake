@@ -1,6 +1,7 @@
 # IsaacLab uv2nix packaging
 
-The package uses the official `v3.0.0` source and `uv.lock` with Isaac Sim 6.2.0.
+The package uses a pinned `release/3.1.0` source snapshot and its `uv.lock` with
+Isaac Sim 6.2.0. See [README.md](README.md) for the revision and pre-release status.
 Nix fetches declared artifacts and builds dependencies offline.
 The launcher uses the simulator's bundled Python without activating a virtualenv.
 
@@ -32,7 +33,7 @@ The official lock supplies core and the `skrl`, `sb3`, `rl-games`, `test`,
 `video` and `wandb` extras. Core includes RSL-RL and the Newton viewer. Teleop and
 Mimic workspace modules are included for keyboard teleoperation and task
 configurations. The complete Mimic and XR/CloudXR extras, OV runtimes and extra
-viewer frameworks are not selected. Linux x86_64 uses the locked CUDA 12.8
+viewer frameworks are not selected. Linux x86_64 uses the locked CUDA 13.0
 PyTorch artifacts. Source-only packages retain their locked
 sources and receive explicit build backends through `resolveBuildSystem`.
 
@@ -47,7 +48,12 @@ pyproject.nix editable hook resolves the source root without patching upstream.
 Two upstream compatibility corrections remain explicit:
 
 - NumPy 2.3.5 replaces the lock's incompatible 2.5.1 override, satisfying Numba
-  and cmeel-boost's `<2.4` constraint. The replacement wheel has a fixed hash.
+  and cmeel-boost's `<2.4` constraint. The nixpkgs NumPy source builder uses a
+  fixed-hash 2.3.5 source archive and nixpkgs' OpenBLAS 0.3.32. The standard
+  pyproject.nix `nixpkgsPrebuilt` adapter preserves the uv2nix dependency graph
+  without nixpkgs Python-path injection. This avoids the fork-unsafe OpenBLAS
+  bundled in NumPy's wheel. The upstream lock supplies SciPy 1.18.1 with a fixed
+  vendored OpenBLAS. Neither launcher forces a BLAS thread count.
 - Open3D's omitted ipywidgets dependency is selected from the same lock; uv2nix
   follows its transitive graph.
 
@@ -57,7 +63,8 @@ nixpkgs inputs supply cuFile's RDMA libraries, NVSHMEM's MPI/PMIx/UCX/libfabric/
 libraries, Numba's TBB, Open3D's udev and ovstage's hwloc/libXt. Open3D's bundled
 Torch plugin still links the CUDA 12 runtime even though IsaacLab uses CUDA 13.
 Torchaudio and Open3D need explicit native Torch dependency edges omitted from
-their metadata.
+their metadata. CuDNN receives `$ORIGIN` through autoPatchelf's `appendRunpaths`
+so its dynamically loaded sibling components resolve without a global library path.
 Only `libcuda.so.1` is deferred to the host driver; other missing libraries fail
 builds. The Open3D ML Torch plugin's execution is outside the verified scope.
 
@@ -93,7 +100,7 @@ bundled ROS/OpenSSL libraries.
 
 ## Updating
 
-Change the `isaaclab-src` tag in `flake.nix` and the version in `isaaclab.nix`, then
+Change the `isaaclab-src` ref in `flake.nix` and the version in `isaaclab.nix`, then
 update only that locked input:
 
 ```bash
@@ -102,6 +109,11 @@ nix flake check
 nix build .#isaaclab
 nix develop --command isaaclab -p isaaclab/smoke.py
 ```
+
+`nix flake check` includes a CPU-only concurrent-native-fork regression for the
+BLAS libraries loaded by both NumPy and SciPy, with multiple threads enabled.
+Python's GIL serializes `os.fork()`, so this check uses a small native reproducer.
+The generic GPU smoke also checks CuDNN convolution and its gradients.
 
 Review upstream dependency changes and each compatibility override. Verify a
 real consumer's simulation, training and existing checkpoint contract, not only

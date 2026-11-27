@@ -12,10 +12,10 @@
   extraDependencies ? {},
   pythonOverrides ? [],
   constraintProjects ? [],
-  name ? "isaaclab-3.0.0",
+  name ? "isaaclab-3.1.0-pre",
 }: let
-  version = "3.0.0";
-  tag = "v${version}";
+  version = "3.1.0-pre";
+  branch = "release/3.1.0";
   revision = isaaclab-src.rev;
   source = callPackage ./source.nix {
     inherit version revision isaacsim;
@@ -53,7 +53,7 @@ in
         --prefix PYTHONPATH : ${environment}/lib/python3.12/site-packages
     '';
     passthru = {
-      inherit version tag revision source sourceWorkspace python environment;
+      inherit version branch revision source sourceWorkspace python environment;
       workspace = sourceWorkspace;
       kitPython = python;
       inherit (assembled) projectPython dependencySpec constraintSpec;
@@ -61,7 +61,7 @@ in
     };
     meta = {
       description = "IsaacLab with an offline uv2nix environment for Isaac Sim";
-      homepage = "https://github.com/isaac-sim/IsaacLab/releases/tag/${tag}";
+      homepage = "https://github.com/isaac-sim/IsaacLab/tree/${revision}";
       license = lib.licenses.bsd3;
       platforms = ["x86_64-linux"];
       mainProgram = "isaaclab";

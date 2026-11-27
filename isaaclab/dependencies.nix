@@ -54,21 +54,28 @@
             wheel = [];
           };
       });
-      # The upstream lock still selects NumPy beyond Numba's supported
-      # range and cmeel-boost's <2.4 constraint.
-      numpy = prev.numpy.overrideAttrs {
-        version = "2.3.5";
-        src = pkgs.fetchPypi {
-          pname = "numpy";
-          version = "2.3.5";
-          format = "wheel";
-          dist = "cp312";
-          python = "cp312";
-          abi = "cp312";
-          platform = "manylinux_2_27_x86_64.manylinux_2_28_x86_64";
-          hash = "sha256-DYFj9DrN6ac8KjNgU1Ok8bxHmHRaix1zGDso5bQ1rig=";
+      # CuDNN dlopens sibling components that do not appear in DT_NEEDED.
+      nvidia-cudnn-cu13 = prev.nvidia-cudnn-cu13.overrideAttrs (old: {
+        appendRunpaths = (old.appendRunpaths or []) ++ ["$ORIGIN"];
+      });
+      # Keep Numba/cmeel-compatible NumPy, but not its wheel's fork-unsafe
+      # OpenBLAS. Reuse nixpkgs' source builder and shared BLAS provider.
+      numpy =
+        (pyproject-nix.build.hacks {
+          inherit pkgs;
+          inherit (pkgs) lib;
+        }).nixpkgsPrebuilt {
+          prev = prev.numpy;
+          from = pkgs.python312Packages.numpy.overridePythonAttrs {
+            version = "2.3.5";
+            src = pkgs.fetchPypi {
+              pname = "numpy";
+              version = "2.3.5";
+              hash = "sha256-eE2x3Nq1a/BRd0PnRt+w+IX8aNlIq6hu7sLLojS98cA=";
+            };
+            meta.changelog = "https://github.com/numpy/numpy/releases/tag/v2.3.5";
+          };
         };
-      };
     };
   nativeWheelOverrides = final: prev: let
     registryNames =

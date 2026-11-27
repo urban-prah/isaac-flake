@@ -1,14 +1,46 @@
-# Early Access verification (historical)
+# IsaacLab verification
 
-The results below apply to the Early Access package, not to `v3.0.0` GA.
-For GA, run the current build and smoke checks in [README.md](README.md).
+## Release/3.1.0 snapshot, 2026-11-27
+
+IsaacLab source `968fb369b72b5b17d1d1fc7ad17c834d2bc23ef0` was tested with
+Isaac Sim 6.2.0 on NixOS x86_64 and an NVIDIA RTX PRO 5000 Blackwell, driver
+595.71.05. This is a pre-release branch snapshot, not the final 3.1.0 release.
+
+- `nix build .#isaaclab` passed. The reused nixpkgs NumPy source builder ran
+  47,361 passing tests, with 2,487 skips, 33 expected failures and five unexpected
+  passes under its existing test policy.
+- `nix flake check --option allow-import-from-derivation false` passed, including
+  dependency metadata, consumer extras, workspace integrity and Nix lint.
+- The CPU-only fork regression passed 20 runs for each actual BLAS library:
+  NumPy 2.3.5 with nixpkgs OpenBLAS 0.3.32/OpenMP, and SciPy 1.18.1 with its
+  vendored OpenBLAS 0.3.31.dev/pthreads. Each run forks from four native threads
+  twelve times per thread. Both libraries used four BLAS threads. The same test
+  timed out on the previous NumPy wheel's OpenBLAS 0.3.30.
+- `nix develop --command isaaclab -p isaaclab/smoke.py` passed without inherited
+  OpenBLAS, GOTO or OpenMP thread caps. It checked headless Kit startup and three
+  updates, native dependencies, RL imports, writable source/cache paths and CUDA
+  matrix multiplication. CuDNN 91900 convolution forward/backward produced finite
+  outputs and gradients on the visible GPU.
+
+The source remains unpatched. Neither launcher forces a BLAS thread count.
+NumPy now uses OpenMP BLAS, so `OMP_NUM_THREADS`, rather than
+`OPENBLAS_NUM_THREADS`, controls that provider. SciPy retains pthread BLAS.
+
+Kit startup reports upstream deprecation in 3.1 and removal in 3.2. Existing
+`/usr/bin/lscpu`, extension and protobuf warnings remain. These checks do not
+verify downstream task APIs, training, checkpoint compatibility, distributed
+training or another GPU model. Consumers must re-verify their workflows.
+
+## Early Access verification, historical
+
+The results below apply only to the Early Access package.
 
 The uv2nix candidate was validated with IsaacLab `v3.0.0-EA`, Isaac Sim 6.1.0 and
 an independent consumer project. Python dependencies and the simulator remain
 in the Nix store; writable source, caches, assets and test outputs are separate.
 Consumer source files and existing checkpoints were preserved during testing.
 
-## Completed release candidate checks
+### Completed release candidate checks
 
 - Standalone and consumer packages built; pure evaluation passed with
   import-from-derivation disabled.
@@ -57,7 +89,7 @@ Consumer source files and existing checkpoints were preserved during testing.
 - Repository flake checks passed, including dependency and consumer-extra checks,
   concurrent workspace/resource checks, existing MCP smoke and Nix formatting/lint.
 
-## Known limitations
+### Known limitations
 
 The legacy Gym RecordVideo/rgb_array path produced no video frames. The official
 EA `ManagerBasedRLEnv.render()` returns `None` for `rgb_array` and directs

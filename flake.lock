@@ -60,16 +60,16 @@
     "isaaclab-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1792444192,
-        "narHash": "sha256-GVZN8E32V4xu+aMJGwuHdodQZoMPezTRwEt0Vz256Ms=",
+        "lastModified": 1795748396,
+        "narHash": "sha256-fI/8jAFFjPcK/QCG+Iw7oy0av+lRacDgt15QqDlTH6Y=",
         "owner": "isaac-sim",
         "repo": "IsaacLab",
-        "rev": "e3f7d9ff1f5d7f8280de3ece9000b7117f66bcf4",
+        "rev": "968fb369b72b5b17d1d1fc7ad17c834d2bc23ef0",
         "type": "github"
       },
       "original": {
         "owner": "isaac-sim",
-        "ref": "v3.0.0",
+        "ref": "release/3.1.0",
         "repo": "IsaacLab",
         "type": "github"
       }

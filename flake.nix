@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     git-hooks.url = "github:cachix/git-hooks.nix";
     isaaclab-src = {
-      url = "github:isaac-sim/IsaacLab/v3.0.0";
+      url = "github:isaac-sim/IsaacLab/release/3.1.0";
       flake = false;
     };
     pyproject-nix = {
@@ -93,6 +93,15 @@
     in {
       inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) isaaclab;
       isaaclab-dependencies = self.packages.${pkgs.stdenv.hostPlatform.system}.isaaclab.tests.dependencies;
+      isaaclab-openblas-fork =
+        pkgs.runCommandCC "isaaclab-openblas-fork-check" {
+          nativeBuildInputs = [self.packages.${pkgs.stdenv.hostPlatform.system}.isaaclab.environment];
+          OPENBLAS_NUM_THREADS = "4";
+          OMP_NUM_THREADS = "4";
+        } ''
+          $CC -pthread ${./isaaclab/tests/openblas-fork.c} -ldl -o concurrent-fork
+          python ${./isaaclab/tests/openblas-fork.py} "$PWD/concurrent-fork" > "$out"
+        '';
       isaaclab-consumer-extras =
         pkgs.runCommand "isaaclab-consumer-extras-check" {
           nativeBuildInputs = [pkgs.python3];
